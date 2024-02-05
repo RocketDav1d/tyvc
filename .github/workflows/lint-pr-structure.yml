@@ -1,0 +1,20 @@
+name: Lint Pull Request
+on:
+  pull_request:
+    types: [opened, edited, synchronize]
+
+jobs:
+  lint-pull-request:
+    name: Lint Pull Request
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Lint Pull Request
+        uses: reaction-link/actions-lint-pull-request@v2
+        with:
+          access-token: ${{secrets.GITHUB_TOKEN}}
+          token-login: github-actions[bot]
+          github-event: ${{toJson(github.event)}}
+          use-title-regex: '(Chore|Feature|Bugfix|Hotfix|Release)(\/REA-\d+)?:\s\w+'
+          use-approval-labels: '["Good Structure"]'
+          use-explanation-title: '["- There must be a title in this format: `Chore|Feature|Bugfix|Hotfix|Release: Title`","- If applicable, add your issue ticket (e.g. `A-100`) with a slash in the title (Feature/A-100: Title)","- Use `Feature` for enhancements or new functionality","- Use `Bugfix` only if you fixed a known bug","- Use `Hotfix` for problems introduced by previous merges","- Use proper capitalization in your title"]'

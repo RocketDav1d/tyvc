@@ -1,0 +1,33 @@
+name: Jest Tests for API
+on: push
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set Node.js 16.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+          cache: 'yarn'
+
+      - name: Run install
+        run: yarn install
+        env:
+          NODE_ENV: test
+
+      - name: Run build
+        run: yarn build
+        env:
+          NODE_ENV: test
+
+      - name: Start Next.js app
+        run: yarn ci:test
+        env:
+          NODE_ENV: test
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          MAPBOX_ACCESS_TOKEN: ${{ secrets.MAPBOX_ACCESS_TOKEN }}
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          TEST_API_KEY: ${{ secrets.TEST_API_KEY }}
+          TEST_EMAIL: ${{ secrets.TEST_EMAIL }}

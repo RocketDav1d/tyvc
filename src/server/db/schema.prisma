@@ -1,0 +1,500 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Add pgbouncer=true and connection_limit=1 url params for production db connection url
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("SUPABASE_DATABASE_URL")
+}
+
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String? @db.Text
+  access_token       String? @db.Text
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String? @db.Text
+  session_state      String?
+  oauth_token_secret String?
+  oauth_token        String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model User {
+  id               String           @id @default(cuid())
+  firstName        String?
+  lastName         String?
+  email            String?          @unique
+  emailVerified    DateTime?
+  imageSrc         String?
+  role             UserRole         @default(USER)
+  onboardingStatus OnboardingStatus @default(PENDING)
+
+  userProfiles UserProfile[]
+  accounts     Account[]
+  sessions     Session[]
+  reviews      Review[]
+  comments     Comment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+enum OnboardingStatus {
+  APPROVED
+  REJECTED
+  PENDING
+}
+
+enum UserRole {
+  USER
+  ADMIN
+  SUPERADMIN
+}
+
+model UserProfile {
+  id String @id @default(cuid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  businessAngelId  String?
+  founderId        String?
+  limitedPartnerId String?
+  employeeId       String?
+
+  businessAngel  BusinessAngel?  @relation(fields: [businessAngelId], references: [id])
+  founder        Founder?        @relation(fields: [founderId], references: [id])
+  limitedPartner LimitedPartner? @relation(fields: [limitedPartnerId], references: [id])
+  employee       Employee?       @relation(fields: [employeeId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model GamificationAward {
+  id    String @id @default(uuid())
+  title String
+
+  icon  String?
+  about String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model Fund {
+  id   String @id @default(uuid())
+  name String
+  slug String @unique
+
+  logo         String?
+  headquarter  String?
+  topics       String[]
+  stages       String[]
+  description  String?
+  foundingDate DateTime?
+
+  website       String?
+  linkedIn      String?
+  twitter       String?
+  medium        String?
+  youTube       String?
+  instagram     String?
+  newsletter    String?
+  email         String?
+  phoneNumber   String?
+  pitchFormular String?
+
+  portfolioCompanies PortfolioCompany[]
+  employees          Employee[]
+  offices            Office[]
+  generations        FundGeneration[]
+  media_items        Media[]
+  reviews            Review[]
+  investments        Investment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model Office {
+  id   String @id @default(uuid())
+  name String
+
+  thumbnail String?
+  street    String?
+  state     String?
+  zip       String?
+  city      String?
+  country   String?
+  latitude  Float?
+  longitude Float?
+
+  fund   Fund   @relation(fields: [fundId], references: [id])
+  fundId String
+
+  employees Employee[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model Employee {
+  id String @id @default(uuid())
+
+  firstName String
+  lastName  String
+
+  position   String?
+  stage      String[]
+  sector     String[]
+  about      String?
+  skill      String[]
+  university String?
+  location   String?
+
+  profilePicture String?
+  startingYear   String?
+  vita           String?
+
+  topics    String[]
+  languages String[]
+
+  linkedIn  String?
+  medium    String?
+  twitter   String?
+  email     String?
+  phone     String?
+  diversity Diversity @default(WHITE_MALE)
+
+  boards       Board[]
+  funds        Fund[]
+  investments  Investment[]
+  userProfiles UserProfile[]
+
+  office   Office @relation(fields: [officeId], references: [id])
+  officeId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+enum BOARD_STATUS {
+  ACTIVE
+  DEACTIVE
+}
+
+model Board {
+  id String @id @default(uuid())
+
+  title       String
+  description String?
+  status      BOARD_STATUS @default(ACTIVE)
+  year        String?
+
+  company   PortfolioCompany?
+  companyId String?
+
+  employee   Employee @relation(fields: [employeeId], references: [id])
+  employeeId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model FundGeneration {
+  id   String @id @default(uuid())
+  name String
+
+  description String?
+  size        String?
+  publishedAt DateTime?
+
+  fund   Fund   @relation(fields: [fundId], references: [id])
+  fundId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model LimitedPartner {
+  id   String @id @default(uuid())
+  name String
+
+  logo         String?
+  headquarter  String?
+  targets      String[]
+  description  String?
+  foundingDate DateTime?
+
+  website       String?
+  linkedIn      String?
+  twitter       String?
+  medium        String?
+  youTube       String?
+  instagram     String?
+  newsletter    String?
+  email         String?
+  phoneNumber   String?
+  pitchFormular String?
+
+  reviews Review[]
+
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @default(now())
+  UserProfile UserProfile[]
+}
+
+enum Diversity {
+  WHITE_MALE
+  WHITE_FEMALE
+  BLACK_MALE
+  BLACK_FEMALE
+}
+
+enum CompanyDiversity {
+  ONLY_WHITE_MALE_FOUNDERS
+  ONLY_WHITE_FEMALE_FOUNDERS
+  ONLY_POC_MALE_FOUNDERS
+  ONLY_POC_FEMALE_FOUNDERS
+  MIN_1_W
+  MIN_1_POC
+  MIN_1_W_POC
+}
+
+model BusinessAngel {
+  id   String @id @default(uuid())
+  name String
+  slug String @unique
+
+  profilePicture String?
+  location       String?
+  topics         String[]
+  stages         String[]
+  about          String?
+  foundingDate   DateTime?
+
+  website       String?
+  linkedIn      String?
+  twitter       String?
+  medium        String?
+  youTube       String?
+  instagram     String?
+  newsletter    String?
+  email         String?
+  phoneNumber   String?
+  pitchFormular String?
+  ticketSize    String?
+  diversity     Diversity @default(WHITE_MALE)
+
+  reviews      Review[]
+  userProfiles UserProfile[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model Founder {
+  id   String @id @default(uuid())
+  name String
+  slug String @unique
+
+  position      String?
+  serialFounder Boolean @default(false)
+  desciption    String?
+
+  linkedIn    String?
+  twitter     String?
+  medium      String?
+  youTube     String?
+  instagram   String?
+  newsletter  String?
+  email       String?
+  phoneNumber String?
+
+  portfolioCompanies PortfolioCompany[]
+  userProfiles       UserProfile[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model PortfolioCompany {
+  id   String @id @default(uuid())
+  name String
+  slug String @unique
+
+  logo            String?
+  about           String?
+  sector          String[]
+  investmentStage String?
+  invesetmentDate String?
+  funding         String?
+  valuation       String?
+  diversity       CompanyDiversity @default(ONLY_WHITE_MALE_FOUNDERS)
+
+  founders    Founder[]
+  funds       Fund[]
+  investments Investment[]
+
+  board   Board?  @relation(fields: [boardId], references: [id])
+  boardId String? @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model Investment {
+  id          String    @id @default(uuid())
+  amount      Float?
+  announcedAt DateTime?
+
+  fundId             String
+  portfolioCompanyId String
+  employees          Employee[]
+
+  fund             Fund             @relation(fields: [fundId], references: [id])
+  portfolioCompany PortfolioCompany @relation(fields: [portfolioCompanyId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+enum MEDIA_TYPE {
+  PODCAST
+  ARTICLE
+  VIDEO
+}
+
+model Media {
+  id    String     @id @default(uuid())
+  title String
+  type  MEDIA_TYPE @default(ARTICLE)
+
+  description String?
+  thumbnail   String?
+  url         String?
+  publishedAt DateTime?
+
+  fund   Fund   @relation(fields: [fundId], references: [id])
+  fundId String
+
+  publisher   Publisher @relation(fields: [publisherId], references: [id])
+  publisherId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model Publisher {
+  id   String @id @default(uuid())
+  name String
+
+  logo         String?
+  url          String    @unique
+  foundingDate DateTime?
+  description  String?
+
+  media_items Media[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model Event {
+  id   String @id @default(uuid())
+  name String
+  slug String @unique
+
+  description String?
+  organizer   String?
+  headerImage String?
+  pricing     String[]
+  url         String?
+  date        DateTime?
+
+  street  String?
+  state   String?
+  zip     String?
+  city    String?
+  country String?
+
+  latitude  Float?
+  longitude Float?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model Comment {
+  id   String @id @default(uuid())
+  text String
+
+  reviewId String
+  review   Review @relation(fields: [reviewId], references: [id])
+  authorId String
+  author   User   @relation(fields: [authorId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model Review {
+  id          String  @id @default(uuid())
+  title       String
+  description String?
+  starRating  Int     @default(0)
+
+  fundId           String?
+  limitedPartnerId String?
+  userId           String?
+  businessAngelId  String?
+
+  user           User?           @relation(fields: [userId], references: [id])
+  fund           Fund?           @relation(fields: [fundId], references: [id])
+  limitedPartner LimitedPartner? @relation(fields: [limitedPartnerId], references: [id])
+  businessAngel  BusinessAngel?  @relation(fields: [businessAngelId], references: [id])
+
+  comments Comment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+  @@unique([fundId, limitedPartnerId, userId])
+}
