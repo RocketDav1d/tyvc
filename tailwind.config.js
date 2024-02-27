@@ -17,6 +17,9 @@ module.exports = {
       },
     },
     extend: {
+      width: { // Add this block
+        'fit-content': 'fit-content',
+      },
       keyframes: {
         'accordion-down': {
           from: { height: '0' },
@@ -31,6 +34,9 @@ module.exports = {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
       },
+      colors: {
+        'tyvc-green': '#69E07C',
+      }
     },
   },
   plugins: [require('tailwindcss-animate')],

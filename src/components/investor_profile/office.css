@@ -1,0 +1,35 @@
+.cardWithBlur{
+    position: relative;
+    overflow: hidden;
+}
+
+.cardWithBlur::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    /* background: linear-gradient(to top, rgba(255,255,255,0.8), transparent); */
+
+    background: linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 60%);
+
+    /* background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 100%); */
+    backdrop-filter: blur(1px);
+}
+
+
+
+
+.cardWithBlur2 {
+    position: relative;
+    background-image:
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 30%, rgba(48, 47, 47, 0.9) 95%),
+    url("https://ukakaqjpfypyxhawaayy.supabase.co/storage/v1/object/sign/cities/berlin.jpeg?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJjaXRpZXMvYmVybGluLmpwZWciLCJpYXQiOjE3MDc3Mzk4MTAsImV4cCI6MTcwODM0NDYxMH0.D1uZOP1n08DB2Czb6oZK9MsUpgw7VKLDpxfIM143t4g&t=2024-02-12T12%3A10%3A10.780Z");
+    width: 80%;
+    height: 400px;
+    background-size: cover;
+    color: white;
+    padding: 20px;
+}
