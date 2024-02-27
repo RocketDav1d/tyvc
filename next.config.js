@@ -29,6 +29,15 @@ const nextConfig = {
   i18n: {
     ...i18n,
   },
+  async redirects() {
+    return [
+      {
+        source: '/',
+        destination: '/app/dashboard',
+        permanent: true,
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig;
