@@ -71,6 +71,7 @@ enum OnboardingStatus {
   APPROVED
   REJECTED
   PENDING
+  CALL_SCHEDULED
 }
 
 enum UserRole {

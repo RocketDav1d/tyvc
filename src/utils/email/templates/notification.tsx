@@ -4,6 +4,7 @@ import { Resend } from 'resend';
 
 import { ApproveEmailTemplate } from '@/utils/templates/approve';
 import { RejectEmailTemplate } from '@/utils/templates/reject';
+import { SetupCallEmailTemplate } from '@/utils/templates/setupCall';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -24,6 +25,8 @@ async function sendNotificationEmail(
     switch (props.action) {
       case 'approve':
         return <ApproveEmailTemplate hostUrl={props.hostUrl} />;
+      case 'other':
+        return <SetupCallEmailTemplate hostUrl={props.hostUrl}/>
       case 'reject':
         return <RejectEmailTemplate reason={props.payload.reason} />;
       default:
