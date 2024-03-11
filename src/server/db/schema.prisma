@@ -128,6 +128,8 @@ model Fund {
   headquarter  String?
   topics       String[]
   stages       String[]
+  sector       String[]
+  skills       String[]
   description  String?
   foundingDate DateTime?
 
@@ -142,13 +144,15 @@ model Fund {
   phoneNumber   String?
   pitchFormular String?
 
-  portfolioCompanies PortfolioCompany[]
+  // portfolioCompanies PortfolioCompany[]
   employees          Employee[]
   offices            Office[]
   generations        FundGeneration[]
   media_items        Media[]
   reviews            Review[]
   investments        Investment[]
+
+  coInvestors String[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
@@ -235,6 +239,9 @@ model Board {
   employee   Employee @relation(fields: [employeeId], references: [id])
   employeeId String
 
+  businessAngel   BusinessAngel? @relation(fields: [businessAngelId], references: [id])
+  businessAngelId String?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 }
@@ -308,7 +315,9 @@ model BusinessAngel {
   location       String?
   topics         String[]
   stages         String[]
+  sector         String[]
   about          String?
+  university     String?
   foundingDate   DateTime?
 
   website       String?
@@ -323,12 +332,57 @@ model BusinessAngel {
   pitchFormular String?
   ticketSize    String?
   diversity     Diversity @default(WHITE_MALE)
+  proRataRights Boolean
+
 
   reviews      Review[]
   userProfiles UserProfile[]
 
+  boardPositions Board[]
+  foundedCompanies FoundedCompanies[]
+  jobs Jobs[]
+  investments Investment[]
+  coInvestors String[]
+
+  holdingVehicle HoldingVehicle?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
+}
+
+model HoldingVehicle {
+  id   String @id @default(uuid())
+  name               String
+  register           String
+  registerNumber     Int
+
+  businessAngelId String? @unique
+  businessAngel   BusinessAngel? @relation(fields: [businessAngelId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+}
+
+model FoundedCompanies {
+  id              String @id @default(uuid())
+  name            String
+  current         Boolean
+  exit            Boolean
+  failed          Boolean
+
+  businessAngelId String
+  businessAngel   BusinessAngel @relation(fields: [businessAngelId], references: [id])
+}
+
+model Jobs {
+  id              String @id @default(uuid())
+  companyName     String
+  title           String
+  status          String
+  years           String
+
+  businessAngelId String
+  businessAngel   BusinessAngel @relation(fields: [businessAngelId], references: [id])
 }
 
 model Founder {
@@ -371,7 +425,7 @@ model PortfolioCompany {
   diversity       CompanyDiversity @default(ONLY_WHITE_MALE_FOUNDERS)
 
   founders    Founder[]
-  funds       Fund[]
+  // funds       Fund[]
   investments Investment[]
 
   board   Board?  @relation(fields: [boardId], references: [id])
@@ -387,10 +441,12 @@ model Investment {
   announcedAt DateTime?
 
   fundId             String
+  businessAngelId    String
   portfolioCompanyId String
   employees          Employee[]
 
   fund             Fund             @relation(fields: [fundId], references: [id])
+  businessAngel    BusinessAngel    @relation(fields: [businessAngelId], references: [id])
   portfolioCompany PortfolioCompany @relation(fields: [portfolioCompanyId], references: [id])
 
   createdAt DateTime @default(now())
