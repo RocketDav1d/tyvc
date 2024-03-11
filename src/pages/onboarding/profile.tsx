@@ -1,7 +1,8 @@
 import { Metadata } from 'next';
 import { useRouter } from 'next/router';
 
-import { OnboardingProfileCard } from '@/components/onboading/profile-card';
+import { OnboardingProfileForm } from '@/components/onboarding/profile-form';
+import { useOnboardingProfile } from '@/hooks/use-onboarding-profile';
 import OnboardingLayout from '@/layouts/onboarding-layout';
 
 export const metadata: Metadata = {
@@ -11,18 +12,18 @@ export const metadata: Metadata = {
 
 export default function OnboardingProfilePage() {
   const router = useRouter();
+  const { submitOnboardingProfile } = useOnboardingProfile();
 
-  const onSubmit = (data: {
-    role: string;
-    firstName: string;
-    lastName: string;
-  }) => {
-    console.log(data);
-    // You can add form submission logic here
+  const onSubmit = async (selectedRole: string, data: any) => {
+    await submitOnboardingProfile(selectedRole, data);
+    router.push('/onboarding/review');
   };
   return (
-    <OnboardingLayout>
-      <OnboardingProfileCard onSubmit={onSubmit} />
+    <OnboardingLayout
+      title={'Welcome to TYVC'}
+      description={'Follow the steps below to complete your profile setup.'}
+    >
+      <OnboardingProfileForm onSubmit={onSubmit} />
     </OnboardingLayout>
   );
 }

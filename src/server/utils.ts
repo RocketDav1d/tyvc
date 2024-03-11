@@ -7,6 +7,7 @@ const HTTP_RESPONSE = {
   BAD_REQUEST: 'Bad Request',
   FORBIDDEN: 'Forbidden',
   NOT_FOUND: 'Not Found',
+  METHOD_NOT_ALLOWED: 'Method Not Allowed',
 };
 
 enum HTTP_RESPONSE_CODE {

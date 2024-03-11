@@ -9,7 +9,7 @@ const prisma = new PrismaClient();
 
 export default NextAuth({
   pages: {
-    signIn: '/auth/signin',
+    signIn: '/auth/signup',
     verifyRequest: '/auth/verify',
   },
   providers: [
