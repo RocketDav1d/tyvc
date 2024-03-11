@@ -213,8 +213,8 @@ model Employee {
   investments  Investment[]
   userProfiles UserProfile[]
 
-  office   Office @relation(fields: [officeId], references: [id])
-  officeId String
+  office   Office? @relation(fields: [officeId], references: [id])
+  officeId String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
@@ -236,8 +236,8 @@ model Board {
   company   PortfolioCompany?
   companyId String?
 
-  employee   Employee @relation(fields: [employeeId], references: [id])
-  employeeId String
+  employee   Employee? @relation(fields: [employeeId], references: [id])
+  employeeId String?
 
   businessAngel   BusinessAngel? @relation(fields: [businessAngelId], references: [id])
   businessAngelId String?

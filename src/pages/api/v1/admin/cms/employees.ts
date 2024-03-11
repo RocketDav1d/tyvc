@@ -1,36 +1,24 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 import {
-    errorMessageJSON,
-    HTTP_RESPONSE_CODE,
-  } from '@/server/utils';
+  importEmployeeHandler,
+  removeEmployeeById,
+} from '@/server/db/handlers/Employee';
+import { withAPIKey } from '@/server/middleware/withProtect';
+import {
+  errorMessageJSON,
+  HTTP_RESPONSE,
+  HTTP_RESPONSE_CODE,
+} from '@/server/utils';
+import { logger } from '@/utils/logger';
 
+type CreateEmployeeFunction = (employeeData: any) => Promise<any>;
+type RemoveEmployeeFunction = (employeeId: string) => Promise<any>;
 
-const employee = async (
-  req: NextApiRequest,
-  res: NextApiResponse
-) => {
-  if (req.method !== 'POST' && req.method !== 'DELETE') {
-    res.setHeader('Allow', ['POST', 'DELETE']);
-    return res
-      .status(HTTP_RESPONSE_CODE.METHOD_NOT_ALLOWED)
-      .json(errorMessageJSON('POST or DELETE method is required'));
-  }
-
-  if (req.method === 'DELETE') {
-    const { SupabaseID } = req.body;
-    console.log("delete board", SupabaseID)
-    // Handle delete request here
-    // You can use the SupabaseID or any other parameter to delete the board
-    return res.status(HTTP_RESPONSE_CODE.OK).json({
-      message: 'Employee deleted successfully.',
-    });
-  }
-
-  if (req.method === 'POST') {
-    const { userId } = req.query;
-    const body = req.body;
-    console.log(body)
+type MakeEmployeeProps = {
+  createEmployeeFunction: CreateEmployeeFunction;
+  removeEmployeeFunction: RemoveEmployeeFunction;
+};
 
 //schema
 // {
@@ -47,11 +35,73 @@ const employee = async (
 //   "boardPositions": [ '65d60bd13f3ee3983b7e21d4' ]
 // }
 
-    return res.status(HTTP_RESPONSE_CODE.OK).json({
-      message: 'Employee created successfully.',
-      body: body,
-    });
-  }
-};
+/**
+ * /api/v1/admin/cms/employees
+ * Available methods: POST, DELETE
+ *
+ * POST: Create a new employee
+ * DELETE: Delete an employee
+ *
+ * @param req The next api request
+ * @param res A response handler
+ * @returns message
+ */
 
-export default employee
+export function makeEmployeeHandler(makeProps: MakeEmployeeProps) {
+  return async (req: NextApiRequest, res: NextApiResponse) => {
+    const {
+      createEmployeeFunction: importEmployeeFunction,
+      removeEmployeeFunction,
+    } = makeProps;
+
+    try {
+      switch (req.method) {
+        case 'POST': {
+          if (!req.body || Object.keys(req.body).length === 0) {
+            return res
+              .status(HTTP_RESPONSE_CODE.BAD_REQUEST)
+              .json(errorMessageJSON('Employee data is required.'));
+          }
+          const employeeData = req.body;
+          const newEmployee = await importEmployeeFunction(employeeData);
+          return res.status(HTTP_RESPONSE_CODE.CREATED).json(newEmployee);
+        }
+
+        case 'DELETE': {
+          const { SupabaseID } = req.query;
+          if (typeof SupabaseID !== 'string') {
+            return res
+              .status(HTTP_RESPONSE_CODE.BAD_REQUEST)
+              .json(errorMessageJSON(HTTP_RESPONSE.BAD_REQUEST));
+          }
+          await removeEmployeeFunction(SupabaseID);
+          return res
+            .status(HTTP_RESPONSE_CODE.OK)
+            .json({ message: 'Employee deleted successfully.' });
+        }
+
+        default:
+          res.setHeader('Allow', ['POST', 'DELETE']);
+          return res
+            .status(HTTP_RESPONSE_CODE.METHOD_NOT_ALLOWED)
+            .json(errorMessageJSON(`${req.method} is unavailable`));
+      }
+    } catch (error: any) {
+      logger.error(error);
+      return res
+        .status(HTTP_RESPONSE_CODE.SERVER_ERROR)
+        .json(
+          errorMessageJSON(
+            `${HTTP_RESPONSE.UNHANDLED_FAILURE}: ${error.toString()}`
+          )
+        );
+    }
+  };
+}
+
+const employeeHandler = makeEmployeeHandler({
+  createEmployeeFunction: importEmployeeHandler,
+  removeEmployeeFunction: removeEmployeeById,
+});
+
+export default withAPIKey(employeeHandler);

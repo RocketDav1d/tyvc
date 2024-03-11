@@ -1,53 +1,93 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 import {
-    errorMessageJSON,
-    HTTP_RESPONSE_CODE,
-  } from '@/server/utils';
+  importBoardHandler,
+  removeBoardById,
+} from '@/server/db/handlers/Board';
+import { withAPIKey } from '@/server/middleware/withProtect';
+import {
+  errorMessageJSON,
+  HTTP_RESPONSE,
+  HTTP_RESPONSE_CODE,
+} from '@/server/utils';
+import { logger } from '@/utils/logger';
 
+type CreateBoardFunction = (boardData: any) => Promise<any>;
+type DeleteBoardFunction = (SupabaseID: string) => Promise<any>;
 
-const board = async (
-  req: NextApiRequest,
-  res: NextApiResponse
-) => {
-  if (req.method !== 'POST' && req.method !== 'DELETE') {
-    res.setHeader('Allow', ['POST', 'DELETE']);
-    return res
-      .status(HTTP_RESPONSE_CODE.METHOD_NOT_ALLOWED)
-      .json(errorMessageJSON('POST or DELETE method is required'));
-  }
-
-  if (req.method === 'DELETE') {
-    const { SupabaseID } = req.body;
-    console.log("delete board", SupabaseID)
-    // Handle delete request here
-    // You can use the SupabaseID or any other parameter to delete the board
-    return res.status(HTTP_RESPONSE_CODE.OK).json({
-      message: 'Board deleted successfully.',
-    });
-  }
-
-  if (req.method === 'POST') {
-    const { userId } = req.query;
-    const body = req.body;
-    console.log(body)
-
-// schema
-  // {
-  //   name: 'dots automations',
-  //   year: '2021',
-  //   title: 'fwwef',
-  //   status: 'fwefw',
-  //   boardSeatOn: [ { id: '65d781d7e41b80b434b8eb0c', portfoliocompany: [Array] } ],
-  //   SupabaseID: 'a098671f-72c9-4245-bdfa-be86df444e89'
-  // }
-
-
-    return res.status(HTTP_RESPONSE_CODE.OK).json({
-      message: 'Board created successfully.',
-      body: body,
-    });
-  }
+type MakeBoardProps = {
+  createBoardFunction: CreateBoardFunction;
+  deleteBoardFunction: DeleteBoardFunction;
 };
 
-export default board
+// schema
+// {
+//   name: 'dots automations',
+//   year: '2021',
+//   title: 'fwwef',
+//   status: 'fwefw',
+//   boardSeatOn: [ { id: '65d781d7e41b80b434b8eb0c', portfoliocompany: [Array] } ],
+//   SupabaseID: 'a098671f-72c9-4245-bdfa-be86df444e89'
+// }
+
+/**
+ * /api/v1/admin/cms/boards
+ * Available methods: POST, DELETE
+ *
+ * POST: Create a new board
+ * DELETE: Delete a board
+ *
+ * @param req The next api request
+ * @param res A response handler
+ * @returns message
+ */
+
+export function makeBoardHandler(makeProps: MakeBoardProps) {
+  return async (req: NextApiRequest, res: NextApiResponse) => {
+    const { createBoardFunction, deleteBoardFunction } = makeProps;
+
+    try {
+      switch (req.method) {
+        case 'POST': {
+          const boardData = req.body;
+          const createdBoard = await createBoardFunction(boardData);
+          return res.status(HTTP_RESPONSE_CODE.CREATED).json(createdBoard);
+        }
+        case 'DELETE': {
+          const { SupabaseID } = req.body;
+          if (!SupabaseID) {
+            return res.status(HTTP_RESPONSE_CODE.BAD_REQUEST).json({
+              message: 'Invalid request body. SupabaseID is required.',
+            });
+          }
+          const deletionResult = await deleteBoardFunction(SupabaseID);
+          return res.status(HTTP_RESPONSE_CODE.OK).json({
+            message: 'Board deleted successfully.',
+            data: deletionResult,
+          });
+        }
+        default:
+          res.setHeader('Allow', ['POST', 'DELETE']);
+          return res
+            .status(HTTP_RESPONSE_CODE.METHOD_NOT_ALLOWED)
+            .json(errorMessageJSON(`${req.method} is unavailable`));
+      }
+    } catch (error: any) {
+      logger.error(error);
+      return res
+        .status(HTTP_RESPONSE_CODE.SERVER_ERROR)
+        .json(
+          errorMessageJSON(
+            `${HTTP_RESPONSE.UNHANDLED_FAILURE}: ${error.toString()}`
+          )
+        );
+    }
+  };
+}
+
+const boardHandler = makeBoardHandler({
+  createBoardFunction: importBoardHandler,
+  deleteBoardFunction: removeBoardById,
+});
+
+export default withAPIKey(boardHandler);

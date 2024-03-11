@@ -32,24 +32,41 @@ function dataJSON(data: any): any {
   return { data };
 }
 
- const formatDate = (date: Date): string => {
-   const dateTimeFormat = new Intl.DateTimeFormat('de', {
-     year: 'numeric',
-     month: '2-digit',
-     day: '2-digit',
-     weekday: 'long',
-   });
-   const [
-     { value: weekday },
-     ,
-     { value: day },
-     ,
-     { value: month },
-     ,
-     { value: year },
-     ,
-   ] = dateTimeFormat.formatToParts(date);
-   return `${weekday} ${day}.${month}.${year}`;
- };
+const formatDate = (date: Date): string => {
+  const dateTimeFormat = new Intl.DateTimeFormat('de', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    weekday: 'long',
+  });
+  const [
+    { value: weekday },
+    ,
+    { value: day },
+    ,
+    { value: month },
+    ,
+    { value: year },
+    ,
+  ] = dateTimeFormat.formatToParts(date);
+  return `${weekday} ${day}.${month}.${year}`;
+};
 
- export { errorMessageJSON, dataJSON, formatDate };
+/**
+ * Generates a URL-friendly "slug" from a given string.
+ * @param {string} text - The string to convert to a slug.
+ * @returns {string} The generated slug.
+ */
+const generateSlug = (text: string): string => {
+  return text
+    .toString()
+    .normalize('NFD') // Normalize to NFD Unicode form
+    .replace(/[\u0300-\u036f]/g, '') // Remove diacritics
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '-') // Replace spaces with -
+    .replace(/[^\w\-]+/g, '') // Remove all non-word chars
+    .replace(/\-\-+/g, '-'); // Replace multiple - with single -
+};
+
+export { errorMessageJSON, dataJSON, formatDate, generateSlug };

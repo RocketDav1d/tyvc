@@ -1,44 +1,79 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 import {
-    errorMessageJSON,
-    HTTP_RESPONSE_CODE,
-  } from '@/server/utils';
+  importMediaHandler,
+  removeMediaItem,
+} from '@/server/db/handlers/Media';
+import { withAPIKey } from '@/server/middleware/withProtect';
+import { errorMessageJSON, HTTP_RESPONSE_CODE } from '@/server/utils';
+import { logger } from '@/utils/logger';
 
+type CreateMediaFunction = (mediaData: any) => Promise<any>;
+type DeleteMediaFunction = (mediaId: string) => Promise<any>;
 
-const content = async (
-  req: NextApiRequest,
-  res: NextApiResponse
-) => {
-  if (req.method !== 'POST' && req.method !== 'DELETE') {
-    res.setHeader('Allow', ['POST', 'DELETE']);
-    return res
-      .status(HTTP_RESPONSE_CODE.METHOD_NOT_ALLOWED)
-      .json(errorMessageJSON('POST or DELETE method is required'));
-  }
-
-  if (req.method === 'DELETE') {
-    const { SupabaseID } = req.body;
-    console.log("delete board", SupabaseID)
-    // Handle delete request here
-    // You can use the SupabaseID or any other parameter to delete the board
-    return res.status(HTTP_RESPONSE_CODE.OK).json({
-      message: 'Content deleted successfully.',
-    });
-  }
-
-  if (req.method === 'POST') {
-    const { userId } = req.query;
-    const body = req.body;
-    console.log(body)
-    // Extract the necessary fields from the body as per your requirement
-    // const { id, name, ... } = body;
-
-    return res.status(HTTP_RESPONSE_CODE.OK).json({
-      message: 'Content created successfully.',
-      body: body,
-    });
-  }
+type MakeMediaProps = {
+  createMediaFunction: CreateMediaFunction;
+  deleteMediaFunction: DeleteMediaFunction;
 };
 
-export default content
+/**
+ * /api/v1/admin/cms/media
+ * Available methods: POST, DELETE
+ *
+ * POST: Create a new media
+ * DELETE: Delete a media
+ *
+ * @param req The next api request
+ * @param res A response handler
+ * @returns message
+ */
+
+export function makeContentHandler(makeProps: MakeMediaProps) {
+  return async (req: NextApiRequest, res: NextApiResponse) => {
+    const { createMediaFunction, deleteMediaFunction } = makeProps;
+
+    try {
+      switch (req.method) {
+        case 'POST': {
+          if (!req.body || Object.keys(req.body).length === 0) {
+            return res
+              .status(HTTP_RESPONSE_CODE.BAD_REQUEST)
+              .json(errorMessageJSON('Media data is required.'));
+          }
+          const mediaData = req.body;
+          const newMedia = await createMediaFunction(mediaData);
+          return res.status(HTTP_RESPONSE_CODE.CREATED).json(newMedia);
+        }
+        case 'DELETE': {
+          if (!req.body || !req.body.SupabaseID) {
+            return res
+              .status(HTTP_RESPONSE_CODE.BAD_REQUEST)
+              .json(errorMessageJSON('SupabaseID is required.'));
+          }
+          const { SupabaseID } = req.body;
+          await deleteMediaFunction(SupabaseID);
+          return res
+            .status(HTTP_RESPONSE_CODE.OK)
+            .json({ message: 'Media deleted successfully.' });
+        }
+        default:
+          res.setHeader('Allow', ['POST', 'DELETE']);
+          return res
+            .status(HTTP_RESPONSE_CODE.METHOD_NOT_ALLOWED)
+            .json(errorMessageJSON('POST or DELETE method is required'));
+      }
+    } catch (error: any) {
+      logger.error(error);
+      return res
+        .status(HTTP_RESPONSE_CODE.SERVER_ERROR)
+        .json(errorMessageJSON(`Unhandled failure: ${error.toString()}`));
+    }
+  };
+}
+
+const contentHandler = makeContentHandler({
+  createMediaFunction: importMediaHandler,
+  deleteMediaFunction: removeMediaItem,
+});
+
+export default withAPIKey(contentHandler);
