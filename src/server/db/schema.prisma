@@ -171,8 +171,8 @@ model Office {
   latitude  Float?
   longitude Float?
 
-  fund   Fund   @relation(fields: [fundId], references: [id])
-  fundId String
+  fund   Fund?   @relation(fields: [fundId], references: [id])
+  fundId String?
 
   employees Employee[]
 
@@ -253,6 +253,7 @@ model FundGeneration {
   description String?
   size        String?
   publishedAt DateTime?
+  year        String?
 
   fund   Fund   @relation(fields: [fundId], references: [id])
   fundId String
@@ -332,12 +333,11 @@ model BusinessAngel {
   pitchFormular String?
   ticketSize    String?
   diversity     Diversity @default(WHITE_MALE)
-  proRataRights Boolean
 
+  proRataRights Boolean
 
   reviews      Review[]
   userProfiles UserProfile[]
-
   boardPositions Board[]
   foundedCompanies FoundedCompanies[]
   jobs Jobs[]
@@ -346,6 +346,7 @@ model BusinessAngel {
 
   holdingVehicle HoldingVehicle?
 
+
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 }
@@ -353,8 +354,8 @@ model BusinessAngel {
 model HoldingVehicle {
   id   String @id @default(uuid())
   name               String
-  register           String
-  registerNumber     Int
+  register           String?
+  registerNumber     String?
 
   businessAngelId String? @unique
   businessAngel   BusinessAngel? @relation(fields: [businessAngelId], references: [id])
@@ -366,9 +367,9 @@ model HoldingVehicle {
 model FoundedCompanies {
   id              String @id @default(uuid())
   name            String
-  current         Boolean
-  exit            Boolean
-  failed          Boolean
+  current         Boolean @default(true)
+  exit            Boolean @default(false)
+  failed          Boolean @default(false)
 
   businessAngelId String
   businessAngel   BusinessAngel @relation(fields: [businessAngelId], references: [id])
@@ -384,6 +385,8 @@ model Jobs {
   businessAngelId String
   businessAngel   BusinessAngel @relation(fields: [businessAngelId], references: [id])
 }
+
+
 
 model Founder {
   id   String @id @default(uuid())
@@ -426,12 +429,12 @@ model PortfolioCompany {
 
   founders    Founder[]
   // funds       Fund[]
+  // businessAngels BusinessAngel[]
   investments Investment[]
 
   board   Board?  @relation(fields: [boardId], references: [id])
   boardId String? @unique
 
-  createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 }
 
@@ -469,11 +472,11 @@ model Media {
   url         String?
   publishedAt DateTime?
 
-  fund   Fund   @relation(fields: [fundId], references: [id])
-  fundId String
+  fund   Fund?   @relation(fields: [fundId], references: [id])
+  fundId String?
 
-  publisher   Publisher @relation(fields: [publisherId], references: [id])
-  publisherId String
+  publisher   Publisher? @relation(fields: [publisherId], references: [id])
+  publisherId String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())

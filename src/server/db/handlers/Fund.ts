@@ -18,8 +18,9 @@ async function importFundHandler(body: any) {
       description: body.about || '',
       email: body.email,
       media_items: {
-        connect: body.media.map((mediaId: string) => ({
-          id: mediaId,
+        connectOrCreate: body.media.map((mediaId: string) => ({
+          where: { id: mediaId },
+          create: { id: mediaId, title: 'Default Title' },
         })),
       },
       offices: {
@@ -27,7 +28,7 @@ async function importFundHandler(body: any) {
           id: officeId,
         })),
       },
-      phoneNumber: body.phoneNumber,
+      phoneNumber: body.phoneNumber.toString(),
       coInvestors: body.notableCoInvestors.map(
         (coInvestor: any) => coInvestor.value
       ),
@@ -35,8 +36,8 @@ async function importFundHandler(body: any) {
         create: body.fundGenerations.map((generation: any) => ({
           id: generation.id,
           name: generation.name,
-          year: generation.year,
-          amount: generation.volume,
+          year: generation.year.toString(),
+          size: generation.volume.toString(),
         })),
       },
       employees: {

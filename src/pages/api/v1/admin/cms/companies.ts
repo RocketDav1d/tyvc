@@ -45,7 +45,10 @@ export function makePortfolioCompanyHandler(
           const companyData = req.body;
           const createdCompany =
             await createPortfolioCompanyFunction(companyData);
-          return res.status(HTTP_RESPONSE_CODE.CREATED).json(createdCompany);
+          return res.status(HTTP_RESPONSE_CODE.OK).json({
+              message: 'Company created successfully.',
+              data: createdCompany,
+            });
         }
         case 'DELETE': {
           const { SupabaseID } = req.body;

@@ -41,7 +41,10 @@ export function makeOfficeHandler(makeProps: MakeOfficeProps) {
           }
           const officeData = req.body;
           const newOffice = await createOfficeFunction(officeData);
-          return res.status(HTTP_RESPONSE_CODE.CREATED).json(newOffice);
+          return res.status(HTTP_RESPONSE_CODE.OK).json({
+            message: 'Office created successfully.',
+            data: newOffice,
+          });
         }
         case 'DELETE': {
           if (!req.body || !req.body.officeId) {

@@ -1,4 +1,3 @@
-
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 import {
@@ -85,25 +84,38 @@ type MakeBusinessAngelProps = {
 export function makeBusinessAngelHandler(makeProps: MakeBusinessAngelProps) {
   return async (req: NextApiRequest, res: NextApiResponse) => {
     const { handleCreateBusinessAngel, handleDeleteBusinessAngel } = makeProps;
+
     try {
       switch (req.method) {
         case 'POST': {
-          if (
-            typeof req.body !== 'object' ||
-            req.body === null ||
-            Array.isArray(req.body)
-          ) {
+          try {
+            if (
+              typeof req.body !== 'object' ||
+              req.body === null ||
+              Array.isArray(req.body)
+            ) {
+              return res
+                .status(HTTP_RESPONSE_CODE.BAD_REQUEST)
+                .json(
+                  errorMessageJSON('Invalid request body. Expected an object.')
+                );
+            }
+            const data = req.body;
+            const creationResult = await handleCreateBusinessAngel(data);
+            return res.status(HTTP_RESPONSE_CODE.OK).json({
+              message: 'BusinessAngel created successfully.',
+              data: creationResult,
+            });
+          } catch (error: any) {
+            logger.error(error);
             return res
-              .status(HTTP_RESPONSE_CODE.BAD_REQUEST)
+              .status(HTTP_RESPONSE_CODE.SERVER_ERROR)
               .json(
-                errorMessageJSON('Invalid request body. Expected an object.')
+                errorMessageJSON(
+                  `Error creating BusinessAngel: ${error.toString()}`
+                )
               );
           }
-          const creationResult = await handleCreateBusinessAngel(req.body);
-          return res.status(HTTP_RESPONSE_CODE.OK).json({
-            message: 'BusinessAngel created successfully.',
-            data: creationResult,
-          });
         }
         case 'DELETE': {
           if (!req.body.SupabaseID) {

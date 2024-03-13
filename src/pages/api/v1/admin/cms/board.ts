@@ -22,12 +22,13 @@ type MakeBoardProps = {
 
 // schema
 // {
+//   SupabaseID: 'a098671f-72c9-4245-bdfa-be86df444e89'
 //   name: 'dots automations',
 //   year: '2021',
 //   title: 'fwwef',
 //   status: 'fwefw',
 //   boardSeatOn: [ { id: '65d781d7e41b80b434b8eb0c', portfoliocompany: [Array] } ],
-//   SupabaseID: 'a098671f-72c9-4245-bdfa-be86df444e89'
+
 // }
 
 /**
@@ -50,8 +51,11 @@ export function makeBoardHandler(makeProps: MakeBoardProps) {
       switch (req.method) {
         case 'POST': {
           const boardData = req.body;
-          const createdBoard = await createBoardFunction(boardData);
-          return res.status(HTTP_RESPONSE_CODE.CREATED).json(createdBoard);
+          const creationResult = await createBoardFunction(boardData);
+          return res.status(HTTP_RESPONSE_CODE.OK).json({
+            message: 'Board created successfully.',
+            data: creationResult,
+          });
         }
         case 'DELETE': {
           const { SupabaseID } = req.body;

@@ -64,7 +64,10 @@ export function makeEmployeeHandler(makeProps: MakeEmployeeProps) {
           }
           const employeeData = req.body;
           const newEmployee = await importEmployeeFunction(employeeData);
-          return res.status(HTTP_RESPONSE_CODE.CREATED).json(newEmployee);
+          return res.status(HTTP_RESPONSE_CODE.OK).json({
+            message: 'Employee created successfully.',
+            data: newEmployee,
+          });
         }
 
         case 'DELETE': {

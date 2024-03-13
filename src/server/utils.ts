@@ -58,15 +58,20 @@ const formatDate = (date: Date): string => {
  * @returns {string} The generated slug.
  */
 const generateSlug = (text: string): string => {
-  return text
-    .toString()
-    .normalize('NFD') // Normalize to NFD Unicode form
-    .replace(/[\u0300-\u036f]/g, '') // Remove diacritics
-    .toLowerCase()
-    .trim()
-    .replace(/\s+/g, '-') // Replace spaces with -
-    .replace(/[^\w\-]+/g, '') // Remove all non-word chars
-    .replace(/\-\-+/g, '-'); // Replace multiple - with single -
+  const randomId = Math.floor(Math.random() * 90000) + 10000; // Generates a random number between 10000 and 99999
+  return (
+    text
+      .toString()
+      .normalize('NFD') // Normalize to NFD Unicode form
+      .replace(/[\u0300-\u036f]/g, '') // Remove diacritics
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, '-') // Replace spaces with -
+      .replace(/[^\w\-]+/g, '') // Remove all non-word chars
+      .replace(/\-\-+/g, '-') + // Replace multiple - with single -
+    '-' +
+    randomId.toString()
+  ); // Append the random ID
 };
 
 export { errorMessageJSON, dataJSON, formatDate, generateSlug };

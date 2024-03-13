@@ -41,8 +41,11 @@ export function makeContentHandler(makeProps: MakeMediaProps) {
               .json(errorMessageJSON('Media data is required.'));
           }
           const mediaData = req.body;
-          const newMedia = await createMediaFunction(mediaData);
-          return res.status(HTTP_RESPONSE_CODE.CREATED).json(newMedia);
+          const creationResult = await createMediaFunction(mediaData);
+          return res.status(HTTP_RESPONSE_CODE.OK).json({
+            message: 'Media item created successfully.',
+            data: creationResult,
+          });
         }
         case 'DELETE': {
           if (!req.body || !req.body.SupabaseID) {

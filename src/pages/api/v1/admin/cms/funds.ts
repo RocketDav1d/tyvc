@@ -81,7 +81,10 @@ export function makeFundHandler(makeProps: MakeFundProps) {
           }
           const fundData = req.body;
           const newFund = await createFundFunction(fundData);
-          return res.status(HTTP_RESPONSE_CODE.CREATED).json(newFund);
+          return res.status(HTTP_RESPONSE_CODE.CREATED).json({
+            message: 'Fund created successfully.',
+            data: newFund,
+          });
         }
         case 'DELETE': {
           if (!req.body || !req.body.SupabaseID) {

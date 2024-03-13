@@ -1,8 +1,8 @@
 
-import { CompanyDiversity } from '@prisma/client';
-
 import prisma from '@/server/db/prisma';
 import { generateSlug } from '@/server/utils';
+
+import { mapDiversityToCompany } from './utils'
 
 function companyByIdHandler(companyId: string) {
   return prisma.portfolioCompany.findUnique({
@@ -12,26 +12,6 @@ function companyByIdHandler(companyId: string) {
   });
 }
 
-function mapDiversityToCompany(diversity: string): CompanyDiversity {
-  switch (diversity) {
-    case 'WHITE_MALE':
-      return CompanyDiversity.ONLY_WHITE_MALE_FOUNDERS;
-    case 'WHITE_FEMALE':
-      return CompanyDiversity.ONLY_WHITE_FEMALE_FOUNDERS;
-    case 'BLACK_MALE':
-      return CompanyDiversity.ONLY_POC_MALE_FOUNDERS;
-    case 'BLACK_FEMALE':
-      return CompanyDiversity.ONLY_POC_FEMALE_FOUNDERS;
-    case 'MIN_1_W':
-      return CompanyDiversity.MIN_1_W;
-    case 'MIN_1_POC':
-      return CompanyDiversity.MIN_1_POC;
-    case 'MIN_1_W_POC':
-      return CompanyDiversity.MIN_1_W_POC;
-    default:
-      return CompanyDiversity.ONLY_WHITE_MALE_FOUNDERS; // Default or fallback diversity
-  }
-}
 
 async function importCompanyHandler(body: any) {
   return prisma.portfolioCompany.create({
@@ -44,26 +24,30 @@ async function importCompanyHandler(body: any) {
       sector: body.sector,
       investmentStage: body.investmentStage,
       invesetmentDate: body.invesetmentDate,
-      funding: body.funding,
-      valuation: body.valuation,
+      funding: body.funding.toString(),
+      valuation: body.valuation.toString(),
       diversity: mapDiversityToCompany(body.diversity),
-      founders: {
-        create: body.founders.map((founder: any) => ({
-          id: founder.id,
-          name: founder.name,
-          email: founder.email,
-          linkedIn: founder.linkedin,
-          profilePicture: founder.profilePicture,
-        })),
-      },
-      investments: {
-        create: body.investments.map((investment: any) => ({
-          id: investment.id,
-          year: investment.year,
-          amount: investment.amount,
-          investor: investment.investor,
-        })),
-      },
+      ...(body.founders && {
+        founders: {
+          create: body.founders.map((founder: any) => ({
+            id: founder.id,
+            name: founder.name,
+            email: founder.email,
+            linkedIn: founder.linkedin,
+            profilePicture: founder.profilePicture,
+          })),
+        },
+      }),
+      ...(body.investments && {
+        investments: {
+          create: body.investments.map((investment: any) => ({
+            id: investment.id,
+            year: investment.year,
+            amount: investment.amount,
+            investor: investment.investor,
+          })),
+        },
+      }),
     },
   });
 }

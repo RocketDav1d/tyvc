@@ -20,11 +20,13 @@ async function importOfficeHandler(body: any) {
       country: body.country,
       latitude: body.latitude ? parseFloat(body.latitude) : null,
       longitude: body.longitude ? parseFloat(body.longitude) : null,
-      fund: {
-        connect: {
-          id: body.fundId,
+      ...(body.fundId && {
+        fund: {
+          connect: {
+            id: body.fundId,
+          },
         },
-      },
+      }),
     },
   });
 }

@@ -18,13 +18,13 @@ async function importEmployeeHandler(body: any) {
       email: body.email,
       about: body.about,
       location: body.location,
-      phone: body.phoneNumber,
+      phone: body.phoneNumber.toString(),
       investments: {
         connect: body.investments.map((investmentId: string) => ({
           id: investmentId,
         })),
       },
-      startingYear: body.startingYear,
+      startingYear: body.startingYear.toString(),
       boards: {
         connect: body.boardPositions.map((boardPositionId: string) => ({
           id: boardPositionId,
