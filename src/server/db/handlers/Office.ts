@@ -1,4 +1,6 @@
+
 import prisma from '@/server/db/prisma';
+import { logger } from '@/utils/logger';
 
 async function officeForId(officeId: string) {
   return prisma.office.findUnique({
@@ -9,24 +11,32 @@ async function officeForId(officeId: string) {
 }
 
 async function importOfficeHandler(body: any) {
+  logger.debug('importOfficeHandler', body);
+
   return prisma.office.create({
     data: {
       id: body.SupabaseID,
-      name: body.name,
+      payloadID: body.SupabaseID,
+      thumbnail: body.logo,
+      name: '',
       street: body.street,
       state: body.state,
       zip: body.zip,
       city: body.city,
       country: body.country,
-      latitude: body.latitude ? parseFloat(body.latitude) : null,
-      longitude: body.longitude ? parseFloat(body.longitude) : null,
-      ...(body.fundId && {
-        fund: {
-          connect: {
-            id: body.fundId,
-          },
-        },
-      }),
+      latitude: body.coordinates.latitude
+        ? parseFloat(body.coordinates.latitude)
+        : null,
+      longitude: body.coordinates.longitude
+        ? parseFloat(body.coordinates.longitude)
+        : null,
+      // ...(body.fundId && {
+      //   fund: {
+      //     connect: {
+      //       id: body.fundId,
+      //     },
+      //   },
+      // }),
     },
   });
 }

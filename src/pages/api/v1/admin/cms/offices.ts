@@ -3,9 +3,10 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import {
   importOfficeHandler,
   removeOfficeById,
-} from '@/server/db/handlers/Offices';
+} from '@/server/db/handlers/Office';
 import { withAPIKey } from '@/server/middleware/withProtect';
 import { errorMessageJSON, HTTP_RESPONSE_CODE } from '@/server/utils';
+import { logger } from '@/utils/logger';
 
 type CreateOfficeFunction = (officeData: any) => Promise<any>;
 type DeleteOfficeFunction = (officeId: string) => Promise<any>;
@@ -34,11 +35,7 @@ export function makeOfficeHandler(makeProps: MakeOfficeProps) {
     try {
       switch (req.method) {
         case 'POST': {
-          if (!req.body || Object.keys(req.body).length === 0) {
-            return res
-              .status(HTTP_RESPONSE_CODE.BAD_REQUEST)
-              .json(errorMessageJSON('Office data is required.'));
-          }
+          logger.debug(req);
           const officeData = req.body;
           const newOffice = await createOfficeFunction(officeData);
           return res.status(HTTP_RESPONSE_CODE.OK).json({

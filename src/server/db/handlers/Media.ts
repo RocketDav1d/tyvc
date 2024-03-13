@@ -27,37 +27,38 @@ async function importMediaHandler(body: any) {
   return prisma.media.create({
     data: {
       id: body.SupabaseID,
+      payloadID: body.SupabaseID,
       title: body.title,
       type: mapType(body.type),
       description: body.description,
       url: body.url,
       thumbnail: body.thumbnail,
       publishedAt: body.publishedAt ? new Date(body.publishedAt) : null,
-      ...(body.fundId && {
-        fund: {
-          connect: {
-            id: body.fundId,
-          },
-        },
-      }),
-      ...(body.publisherId && {
-        publisher: {
-          connectOrCreate: {
-            where: {
-              id: body.publisherId,
-            },
-            create: {
-              name: body.publisherName,
-              url: body.publisherUrl,
-              logo: body.publisherLogo,
-              foundingDate: body.publisherFoundingDate
-                ? new Date(body.publisherFoundingDate)
-                : null,
-              description: body.publisherDescription,
-            },
-          },
-        },
-      }),
+      // ...(body.fundId && {
+      //   fund: {
+      //     connect: {
+      //       id: body.fundId,
+      //     },
+      //   },
+      // }),
+      // ...(body.publisherId && {
+      //   publisher: {
+      //     connectOrCreate: {
+      //       where: {
+      //         id: body.publisherId,
+      //       },
+      //       create: {
+      //         name: body.publisherName,
+      //         url: body.publisherUrl,
+      //         logo: body.publisherLogo,
+      //         foundingDate: body.publisherFoundingDate
+      //           ? new Date(body.publisherFoundingDate)
+      //           : null,
+      //         description: body.publisherDescription,
+      //       },
+      //     },
+      //   },
+      // }),
     },
   });
 }

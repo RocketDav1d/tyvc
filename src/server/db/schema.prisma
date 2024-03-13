@@ -121,6 +121,7 @@ model GamificationAward {
 
 model Fund {
   id   String @id @default(uuid())
+  payloadID     String @unique
   name String
   slug String @unique
 
@@ -130,9 +131,11 @@ model Fund {
   stages       String[]
   sector       String[]
   skills       String[]
+  ticketSize   String?
   description  String?
   foundingDate DateTime?
 
+  color         String?
   website       String?
   linkedIn      String?
   twitter       String?
@@ -154,12 +157,16 @@ model Fund {
 
   coInvestors String[]
 
+  board   Board? @relation(fields: [boardId], references: [id])
+  boardId String? @unique
+
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 }
 
 model Office {
   id   String @id @default(uuid())
+  payloadID     String @unique
   name String
 
   thumbnail String?
@@ -182,6 +189,7 @@ model Office {
 
 model Employee {
   id String @id @default(uuid())
+  payloadID     String @unique
 
   firstName String
   lastName  String
@@ -204,6 +212,9 @@ model Employee {
   linkedIn  String?
   medium    String?
   twitter   String?
+  youTube   String?
+  instagram String?
+  newsletter String?
   email     String?
   phone     String?
   diversity Diversity @default(WHITE_MALE)
@@ -227,14 +238,18 @@ enum BOARD_STATUS {
 
 model Board {
   id String @id @default(uuid())
+  payloadID     String @unique
 
   title       String
   description String?
   status      BOARD_STATUS @default(ACTIVE)
   year        String?
 
+  fund      Fund?
+  fundId    String? @unique
+
   company   PortfolioCompany?
-  companyId String?
+  companyId String? @unique
 
   employee   Employee? @relation(fields: [employeeId], references: [id])
   employeeId String?
@@ -309,6 +324,7 @@ enum CompanyDiversity {
 
 model BusinessAngel {
   id   String @id @default(uuid())
+  payloadID     String @unique
   name String
   slug String @unique
 
@@ -341,8 +357,9 @@ model BusinessAngel {
   boardPositions Board[]
   foundedCompanies FoundedCompanies[]
   jobs Jobs[]
+  media_items        Media[]
   investments Investment[]
-  coInvestors String[]
+  coInvestors Json
 
   holdingVehicle HoldingVehicle?
 
@@ -364,12 +381,20 @@ model HoldingVehicle {
   updatedAt DateTime @default(now())
 }
 
+enum FOUNDEN_COMPANY_STATUS {
+  CURRENT
+  EXIT
+  FAILED
+}
+
 model FoundedCompanies {
   id              String @id @default(uuid())
   name            String
-  current         Boolean @default(true)
-  exit            Boolean @default(false)
-  failed          Boolean @default(false)
+  status          FOUNDEN_COMPANY_STATUS @default(CURRENT)
+  // current         Boolean @default(true)
+  // exit            Boolean @default(false)
+  // failed          Boolean @default(false)
+  logo            String?
 
   businessAngelId String
   businessAngel   BusinessAngel @relation(fields: [businessAngelId], references: [id])
@@ -415,42 +440,51 @@ model Founder {
 
 model PortfolioCompany {
   id   String @id @default(uuid())
+  payloadID     String @unique
   name String
   slug String @unique
 
   logo            String?
   about           String?
   sector          String[]
-  investmentStage String?
-  invesetmentDate String?
+  investmentStage String
+  investmentDate  String?
   funding         String?
   valuation       String?
   diversity       CompanyDiversity @default(ONLY_WHITE_MALE_FOUNDERS)
+
+  register        String
+  registerNumber  String
+  registerCourt   String
 
   founders    Founder[]
   // funds       Fund[]
   // businessAngels BusinessAngel[]
   investments Investment[]
 
-  board   Board?  @relation(fields: [boardId], references: [id])
+  board   Board? @relation(fields: [boardId], references: [id])
   boardId String? @unique
 
   updatedAt DateTime @default(now())
 }
 
 model Investment {
-  id          String    @id @default(uuid())
-  amount      Float?
-  announcedAt DateTime?
+  id               String    @id @default(uuid())
+  payloadID        String @unique
+  amount           Float?
+  announcedAt      DateTime?
+  investmentDate   DateTime?
 
-  fundId             String
-  businessAngelId    String
-  portfolioCompanyId String
-  employees          Employee[]
+  employees        Employee[]
 
-  fund             Fund             @relation(fields: [fundId], references: [id])
-  businessAngel    BusinessAngel    @relation(fields: [businessAngelId], references: [id])
+  fund             Fund?             @relation(fields: [fundId], references: [id])
+  fundId           String?
+
+  businessAngel    BusinessAngel?    @relation(fields: [businessAngelId], references: [id])
+  businessAngelId  String?
+
   portfolioCompany PortfolioCompany @relation(fields: [portfolioCompanyId], references: [id])
+  portfolioCompanyId String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
@@ -464,6 +498,7 @@ enum MEDIA_TYPE {
 
 model Media {
   id    String     @id @default(uuid())
+  payloadID     String @unique
   title String
   type  MEDIA_TYPE @default(ARTICLE)
 
@@ -474,6 +509,9 @@ model Media {
 
   fund   Fund?   @relation(fields: [fundId], references: [id])
   fundId String?
+
+  businessAngel   BusinessAngel?   @relation(fields: [businessAngelId], references: [id])
+  businessAngelId String?
 
   publisher   Publisher? @relation(fields: [publisherId], references: [id])
   publisherId String?

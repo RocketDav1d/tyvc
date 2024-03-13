@@ -1,5 +1,6 @@
 import { Resend } from 'resend';
 
+import { logger } from '@/utils/logger';
 import { loadAuthenticationTemplate } from '@/utils/templates/authentication';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
@@ -16,7 +17,7 @@ function sendAuthenticationEmail(
   return new Promise(async (res) => {
     const { host } = new URL(props.url);
 
-    console.log(props.to, props.from, props.url, host);
+    logger.debug(props.to, props.from, props.url, host);
 
     const html = await loadAuthenticationTemplate({
       organizationLogoURL: '',
@@ -32,7 +33,7 @@ function sendAuthenticationEmail(
       html: html,
     });
 
-    console.log(data, error);
+    logger.debug(data, error);
 
     res();
   });

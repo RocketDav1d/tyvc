@@ -1,8 +1,8 @@
-
 import prisma from '@/server/db/prisma';
 import { generateSlug } from '@/server/utils';
+import { logger } from '@/utils/logger';
 
-import { mapDiversityToCompany } from './utils'
+import { mapDiversityToCompany } from './utils';
 
 function companyByIdHandler(companyId: string) {
   return prisma.portfolioCompany.findUnique({
@@ -14,19 +14,25 @@ function companyByIdHandler(companyId: string) {
 
 
 async function importCompanyHandler(body: any) {
+  logger.debug('importCompanyHandler', body);
+
   return prisma.portfolioCompany.create({
     data: {
       id: body.SupabaseID,
+      payloadID: body.SupabaseID,
       name: body.name,
       slug: generateSlug(body.name),
       logo: body.logo,
       about: body.about || '',
-      sector: body.sector,
-      investmentStage: body.investmentStage,
-      invesetmentDate: body.invesetmentDate,
-      funding: body.funding.toString(),
-      valuation: body.valuation.toString(),
+      sector: body.sectors,
+      investmentStage: body.stages,
+      investmentDate: body.investment_date,
+      funding: body.funding ? body.funding.toString() : '',
+      valuation: body.valuation ? body.valuation.toString() : '',
       diversity: mapDiversityToCompany(body.diversity),
+      register: body.register || '',
+      registerNumber: body.registerNumber || '',
+      registerCourt: body.registerCourt || '',
       ...(body.founders && {
         founders: {
           create: body.founders.map((founder: any) => ({

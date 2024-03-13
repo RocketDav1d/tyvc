@@ -51,6 +51,7 @@ export function makeBoardHandler(makeProps: MakeBoardProps) {
       switch (req.method) {
         case 'POST': {
           const boardData = req.body;
+          logger.debug('Board Data', boardData);
           const creationResult = await createBoardFunction(boardData);
           return res.status(HTTP_RESPONSE_CODE.OK).json({
             message: 'Board created successfully.',

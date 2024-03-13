@@ -80,6 +80,7 @@ export function makeFundHandler(makeProps: MakeFundProps) {
               .json(errorMessageJSON('Fund data is required.'));
           }
           const fundData = req.body;
+          logger.debug('Fund Data', fundData);
           const newFund = await createFundFunction(fundData);
           return res.status(HTTP_RESPONSE_CODE.CREATED).json({
             message: 'Fund created successfully.',

@@ -101,6 +101,7 @@ export function makeBusinessAngelHandler(makeProps: MakeBusinessAngelProps) {
                 );
             }
             const data = req.body;
+            logger.debug('POST data', data);
             const creationResult = await handleCreateBusinessAngel(data);
             return res.status(HTTP_RESPONSE_CODE.OK).json({
               message: 'BusinessAngel created successfully.',

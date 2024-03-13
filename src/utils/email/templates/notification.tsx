@@ -2,6 +2,7 @@ import React from 'react';
 
 import { Resend } from 'resend';
 
+import { logger } from '@/utils/logger';
 import { ApproveEmailTemplate } from '@/utils/templates/approve';
 import { RejectEmailTemplate } from '@/utils/templates/reject';
 import { SetupCallEmailTemplate } from '@/utils/templates/setupCall';
@@ -25,10 +26,10 @@ async function sendNotificationEmail(
     switch (props.action) {
       case 'approve':
         return <ApproveEmailTemplate hostUrl={props.hostUrl} />;
-      case 'other':
-        return <SetupCallEmailTemplate hostUrl={props.hostUrl}/>
       case 'reject':
         return <RejectEmailTemplate reason={props.payload.reason} />;
+      case 'other':
+        return <SetupCallEmailTemplate hostUrl={props.hostUrl} />;
       default:
         return <div>You have a new notification from TYVC.</div>;
     }
@@ -50,7 +51,7 @@ async function sendNotificationEmail(
     throw new Error(`Failed to send notification email: ${error}`);
   }
 
-  console.log(`Notification email sent for action ${props.action}:`, data);
+  logger.debug(`Notification email sent for action ${props.action}:`, data);
 }
 
 export { sendNotificationEmail };

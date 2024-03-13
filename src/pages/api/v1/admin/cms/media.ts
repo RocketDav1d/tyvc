@@ -41,6 +41,7 @@ export function makeContentHandler(makeProps: MakeMediaProps) {
               .json(errorMessageJSON('Media data is required.'));
           }
           const mediaData = req.body;
+          logger.debug('Media Data', mediaData);
           const creationResult = await createMediaFunction(mediaData);
           return res.status(HTTP_RESPONSE_CODE.OK).json({
             message: 'Media item created successfully.',

@@ -1,9 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 import {
-  importCompanyHandler,
-  removeCompanyById,
-} from '@/server/db/handlers/PortfolioCompany';
+  importInvestmentHandler,
+  removeInvestmentById,
+} from '@/server/db/handlers/Investment';
 import { withAPIKey } from '@/server/middleware/withProtect';
 import {
   errorMessageJSON,
@@ -12,44 +12,40 @@ import {
 } from '@/server/utils';
 import { logger } from '@/utils/logger';
 
-type CreatePortfolioCompanyFunction = (companyData: any) => Promise<any>;
-type DeletePortfolioCompanyFunction = (SupabaseID: string) => Promise<any>;
+type CreateInvestmentFunction = (investmentData: any) => Promise<any>;
+type DeleteInvestmentFunction = (SupabaseID: string) => Promise<any>;
 
-type MakePortfolioCompanyProps = {
-  createPortfolioCompanyFunction: CreatePortfolioCompanyFunction;
-  deletePortfolioCompanyFunction: DeletePortfolioCompanyFunction;
+type MakeInvestmentProps = {
+  createInvestmentFunction: CreateInvestmentFunction;
+  deleteInvestmentFunction: DeleteInvestmentFunction;
 };
 
 /**
- * /api/v1/admin/cms/companies
+ * /api/v1/admin/cms/investments
  * Available methods: POST, DELETE
  *
- * POST: Create a new portfolio company
- * DELETE: Delete a portfolio company
+ * POST: Create a new investment
+ * DELETE: Delete an investment
  *
  * @param req The next api request
  * @param res A response handler
  * @returns message
  */
 
-export function makePortfolioCompanyHandler(
-  makeProps: MakePortfolioCompanyProps
-) {
+export function makeInvestmentHandler(makeProps: MakeInvestmentProps) {
   return async (req: NextApiRequest, res: NextApiResponse) => {
-    const { createPortfolioCompanyFunction, deletePortfolioCompanyFunction } =
-      makeProps;
+    const { createInvestmentFunction, deleteInvestmentFunction } = makeProps;
 
     try {
       switch (req.method) {
         case 'POST': {
-          const companyData = req.body;
-          logger.debug('Company Data', companyData);
-          const createdCompany =
-            await createPortfolioCompanyFunction(companyData);
+          const investmentData = req.body;
+          const createdInvestment =
+            await createInvestmentFunction(investmentData);
           return res.status(HTTP_RESPONSE_CODE.OK).json({
-              message: 'Company created successfully.',
-              data: createdCompany,
-            });
+            message: 'Investment created successfully.',
+            data: createdInvestment,
+          });
         }
         case 'DELETE': {
           const { SupabaseID } = req.body;
@@ -58,10 +54,9 @@ export function makePortfolioCompanyHandler(
               message: 'Invalid request body. SupabaseID is required.',
             });
           }
-          const deletionResult =
-            await deletePortfolioCompanyFunction(SupabaseID);
+          const deletionResult = await deleteInvestmentFunction(SupabaseID);
           return res.status(HTTP_RESPONSE_CODE.OK).json({
-            message: 'PortfolioCompany deleted successfully.',
+            message: 'Investment deleted successfully.',
             data: deletionResult,
           });
         }
@@ -84,9 +79,9 @@ export function makePortfolioCompanyHandler(
   };
 }
 
-const portfolioCompanyHandler = makePortfolioCompanyHandler({
-  createPortfolioCompanyFunction: importCompanyHandler,
-  deletePortfolioCompanyFunction: removeCompanyById,
+const investmentHandler = makeInvestmentHandler({
+  createInvestmentFunction: importInvestmentHandler,
+  deleteInvestmentFunction: removeInvestmentById,
 });
 
-export default withAPIKey(portfolioCompanyHandler);
+export default withAPIKey(investmentHandler);

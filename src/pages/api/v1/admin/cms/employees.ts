@@ -63,6 +63,7 @@ export function makeEmployeeHandler(makeProps: MakeEmployeeProps) {
               .json(errorMessageJSON('Employee data is required.'));
           }
           const employeeData = req.body;
+          logger.debug('Employee Data', employeeData);
           const newEmployee = await importEmployeeFunction(employeeData);
           return res.status(HTTP_RESPONSE_CODE.OK).json({
             message: 'Employee created successfully.',
