@@ -1,3 +1,4 @@
+
 import { OnboardingStatus } from '@prisma/client';
 import { NextResponse } from 'next/server';
 import { withAuth } from 'next-auth/middleware';
@@ -13,11 +14,13 @@ export default withAuth(async function middleware(req) {
     const currentPath = new URL(req.url).pathname;
 
     if (userOnboardingStatus === OnboardingStatus.APPROVED) {
-      if (currentPath === '/app/dashboard') {
-        return NextResponse.next();
-      } else {
+      if (
+        currentPath.startsWith('/onboarding') ||
+        currentPath.startsWith('/auth')
+      ) {
         return NextResponse.redirect(new URL('/app/dashboard', req.url));
       }
+      return NextResponse.next();
     } else if (userOnboardingStatus === OnboardingStatus.PENDING) {
       if (currentPath.startsWith('/onboarding/profile')) {
         return NextResponse.next();

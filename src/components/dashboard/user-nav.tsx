@@ -1,4 +1,4 @@
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -10,19 +10,26 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import useUserDetails from '@/hooks/use-user-details';
 
 type UserNavProps = {
   onSignout: () => void;
 };
 
 export function UserNav({ onSignout }: UserNavProps) {
+  const { userDetails } = useUserDetails();
+  const userAvatarLabel =
+    userDetails && userDetails.onboardingData
+      ? `${userDetails.onboardingData['firstName'][0]}${userDetails.onboardingData['lastName'][0]}`
+      : 'U';
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative w-8 h-8 rounded-full">
           <Avatar className="w-8 h-8">
-            <AvatarImage src="/avatars/01.png" alt="@shadcn" />
-            <AvatarFallback>SC</AvatarFallback>
+            <AvatarFallback>{userAvatarLabel}</AvatarFallback>
+
           </Avatar>
         </Button>
       </DropdownMenuTrigger>

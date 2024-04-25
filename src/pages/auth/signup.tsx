@@ -4,7 +4,7 @@ import { signIn } from 'next-auth/react';
 import { UserAuthForm } from '@/components/user-auth-form';
 import AuthLayout from '@/layouts/auth-layout';
 
-export default function Signin() {
+export default function SigninPage() {
   async function onSignin(data: { email: string }) {
     await signIn('email', { email: data.email });
   }

@@ -6,7 +6,7 @@ import AppLayout from '@/layouts/app-layout';
 import { logger } from '@/utils/logger';
 
 export const metadata: Metadata = {
-  title: 'Fund - Reviews',
+  title: 'Fund - About',
   description: '',
 };
 
@@ -21,7 +21,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/funds/${fundId}/reviews`,
+      `${process.env.NEXT_PUBLIC_API_URL}/funds/${fundId}`,
       {
         headers: {
           cookie: context.req.headers.cookie || '',
@@ -30,17 +30,17 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     );
 
     const json = await res.json();
-    let reviews = json.data ? json.data : null;
+    let fund = json.data ? json.data : null;
 
-    logger.debug('Fetched reviews data for fund: ', reviews);
+    logger.debug('Fetched fund data: ', fund);
 
     return {
-      props: { reviews },
+      props: { fund },
     };
   } catch (error) {
-    logger.debug('Error fetching fund reviews data:', error);
+    logger.debug('Error fetching fund data:', error);
     return {
-      props: { reviews: null },
+      props: { fund: null },
     };
   }
 };
@@ -81,36 +81,6 @@ const mockFundData = {
       ),
     },
     { title: 'Team', content: <div>Team Content</div> },
-    // Mock reviews data
-    {
-      title: 'Reviews',
-      content: (
-        <div className="space-y-4">
-          {[
-            {
-              id: 1,
-              author: 'John Doe',
-              rating: 5,
-              comment: 'Excellent partnership and support.',
-            },
-            {
-              id: 2,
-              author: 'Jane Smith',
-              rating: 4,
-              comment: 'Great experience, but communication can improve.',
-            },
-          ].map((review) => (
-            <div key={review.id} className="p-4 bg-white rounded-lg shadow">
-              <div className="flex justify-between items-center">
-                <h5 className="text-lg font-bold">{review.author}</h5>
-                <span className="text-primary">{`Rating: ${review.rating}`}</span>
-              </div>
-              <p className="text-gray-600">{review.comment}</p>
-            </div>
-          ))}
-        </div>
-      ),
-    },
   ],
   isFollowing: false,
   onFollowToggle: () => console.log('Follow toggled'),
@@ -129,7 +99,7 @@ const mockFundData = {
   },
 };
 
-export default function FundReviewsPage() {
+export default function FundAboutPage() {
   return (
     <AppLayout>
       <FundHeader
@@ -146,7 +116,9 @@ export default function FundReviewsPage() {
         onReview={mockFundData.onReview}
       />
       <div className="w-full flex flex-col px-8 py-8 bg-gray-50">
-        {mockFundData.tabs.find((tab) => tab.title === 'Reviews')?.content}
+        <div className="grid grid-cols-3 grid-rows-1 gap-4">
+          {mockFundData.tabs.find((tab) => tab.title === 'Portfolio')?.content}
+        </div>
       </div>
     </AppLayout>
   );

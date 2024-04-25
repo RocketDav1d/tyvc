@@ -2,12 +2,17 @@ import { useState, useEffect } from 'react';
 
 import { User } from '@prisma/client';
 
+interface UserDetails extends User {
+  onboardingData: Record<string, any>;
+}
+
 export default function useUserDetails() {
-  const [userDetails, setUserDetails] = useState<User | null>(null);
+  const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
 
   // Fetch user details
   useEffect(() => {
-    fetch(`/api/v1/user/profile`)
+    console.log('Fetching user details');
+    fetch(`/api/v1/client/user/profile`)
       .then((res) => {
         if (res.status === 200) {
           return res.json();
@@ -15,7 +20,7 @@ export default function useUserDetails() {
           throw null;
         }
       })
-      .then((json) => json['data'] as User)
+      .then((json) => json['data'])
       .then((userDetails) => {
         setUserDetails(userDetails);
       })

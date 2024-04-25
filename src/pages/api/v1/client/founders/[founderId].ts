@@ -21,6 +21,17 @@ type MakeFounderHandlerProps = {
   fetchFounderFunction: FetchFounderFunction;
 };
 
+/**
+ * /api/v1/client/founders/[founderId]
+ * Available methods: GET
+ *
+ * GET: Get a founder by id
+ *
+ * @param req The next api request
+ * @param res A response handler
+ * @returns data: founder
+ */
+
 export function makeFounderHandler(
   makeProps: MakeFounderHandlerProps
 ): ApiHandlerFunction {
@@ -28,29 +39,37 @@ export function makeFounderHandler(
     const { fetchFounderFunction } = makeProps;
     const { founderId } = req.query;
 
-    try {
-      if (typeof founderId !== 'string') {
-        return res
-          .status(HTTP_RESPONSE_CODE.BAD_REQUEST)
-          .json(errorMessageJSON('Founder ID must be a string'));
-      }
+    switch (req.method) {
+      case 'GET':
+        try {
+          if (typeof founderId !== 'string') {
+            return res
+              .status(HTTP_RESPONSE_CODE.BAD_REQUEST)
+              .json(errorMessageJSON('Founder ID must be a string'));
+          }
 
-      const founder = await fetchFounderFunction(founderId);
-      if (!founder) {
-        return res
-          .status(HTTP_RESPONSE_CODE.NOT_FOUND)
-          .json(errorMessageJSON('Founder not found'));
-      }
+          const founder = await fetchFounderFunction(founderId);
+          if (!founder) {
+            return res
+              .status(HTTP_RESPONSE_CODE.NOT_FOUND)
+              .json(errorMessageJSON('Founder not found'));
+          }
 
-      return res.status(HTTP_RESPONSE_CODE.OK).json({ data: founder });
-    } catch (e: any) {
-      return res
-        .status(HTTP_RESPONSE_CODE.SERVER_ERROR)
-        .json(
-          errorMessageJSON(
-            `${HTTP_RESPONSE.UNHANDLED_FAILURE}: ${e.message || e.toString()}`
-          )
-        );
+          return res.status(HTTP_RESPONSE_CODE.OK).json({ data: founder });
+        } catch (e: any) {
+          return res
+            .status(HTTP_RESPONSE_CODE.SERVER_ERROR)
+            .json(
+              errorMessageJSON(
+                `${HTTP_RESPONSE.UNHANDLED_FAILURE}: ${e.message || e.toString()}`
+              )
+            );
+        }
+        break;
+      default:
+        return res
+          .status(HTTP_RESPONSE_CODE.METHOD_NOT_ALLOWED)
+          .json(errorMessageJSON('Method not allowed'));
     }
   };
 }

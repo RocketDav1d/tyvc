@@ -26,7 +26,8 @@ type MakeUserReviewsProps = {
  *
  * @param req The next api request
  * @param res A response handler
- * @returns the latest user reviews
+ * @returns data: reviews
+
  */
 export function makeUserReviewsHandler(
   makeProps: MakeUserReviewsProps

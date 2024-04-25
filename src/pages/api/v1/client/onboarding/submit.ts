@@ -38,15 +38,16 @@ const validateOnboardingSubmission = (
 };
 
 /**
- * /api/v1/onboarding/submit
+ * /api/v1/client/onboarding/submit
  * Available methods: POST
  *
  * POST: Submit onboarding data
- *
- * @param req The next api request
+
+@@ -47,65 +47,66 @@
  * @param res A response handler
  * @returns a message indicating the success of the submission
  */
+
 export function makeOnboardingSubmitHandler(
   makeProps: MakeOnboardingSubmitProps
 ): ApiHandlerFunction {

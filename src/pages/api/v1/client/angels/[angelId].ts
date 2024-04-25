@@ -21,6 +21,17 @@ type MakeAngelHandlerProps = {
   fetchAngelFunction: FetchAngelFunction;
 };
 
+/**
+ * /api/v1/client/angels/[angelId]
+ * Available methods: GET
+ *
+ * GET: Get an angel by id
+ *
+ * @param req The next api request
+ * @param res A response handler
+ * @returns data: angel
+ */
+
 export function makeAngelHandler(
   makeProps: MakeAngelHandlerProps
 ): ApiHandlerFunction {
@@ -28,35 +39,43 @@ export function makeAngelHandler(
     const { fetchAngelFunction } = makeProps;
     const { angelId } = req.query;
 
-    try {
-      if (typeof angelId !== 'string') {
-        return res
-          .status(HTTP_RESPONSE_CODE.BAD_REQUEST)
-          .json(errorMessageJSON('Angel ID must be a string'));
-      }
+    switch (req.method) {
+      case 'GET':
+        try {
+          if (typeof angelId !== 'string') {
+            return res
+              .status(HTTP_RESPONSE_CODE.BAD_REQUEST)
+              .json(errorMessageJSON('Angel ID must be a string'));
+          }
 
-      const angel = await fetchAngelFunction(angelId);
-      if (!angel) {
-        return res
-          .status(HTTP_RESPONSE_CODE.NOT_FOUND)
-          .json(errorMessageJSON('Angel not found'));
-      }
+          const angel = await fetchAngelFunction(angelId);
+          if (!angel) {
+            return res
+              .status(HTTP_RESPONSE_CODE.NOT_FOUND)
+              .json(errorMessageJSON('Angel not found'));
+          }
 
-      return res.status(HTTP_RESPONSE_CODE.OK).json({ data: angel });
-    } catch (e: any) {
-      return res
-        .status(HTTP_RESPONSE_CODE.SERVER_ERROR)
-        .json(
-          errorMessageJSON(
-            `${HTTP_RESPONSE.UNHANDLED_FAILURE}: ${e.message || e.toString()}`
-          )
-        );
+          return res.status(HTTP_RESPONSE_CODE.OK).json({ data: angel });
+        } catch (e: any) {
+          return res
+            .status(HTTP_RESPONSE_CODE.SERVER_ERROR)
+            .json(
+              errorMessageJSON(
+                `${HTTP_RESPONSE.UNHANDLED_FAILURE}: ${e.message || e.toString()}`
+              )
+            );
+        }
+        break;
+      default:
+        return res
+          .status(HTTP_RESPONSE_CODE.METHOD_NOT_ALLOWED)
+          .json(errorMessageJSON('Method not allowed'));
     }
   };
 }
 
 const angelHandler = makeAngelHandler({
-  fetchAngelFunction: angelByIdHandler, // You need to implement this function
+  fetchAngelFunction: angelByIdHandler,
 });
 
 export default withProtect(withRoles(angelHandler, UserRole.USER));

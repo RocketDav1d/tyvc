@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { Button } from './ui/button';
+
 export interface AddReviewProps {
   onAddReviewToggle: () => void;
   reviewLabel: string;
@@ -10,7 +12,7 @@ const AddReview: React.FC<AddReviewProps> = ({
   reviewLabel,
 }) => {
   return (
-    <button
+    <Button
       className="flex items-center px-5 py-1 text-white bg-tyvc-green border rounded-md border-tyvc-green active:bg-green-400 active:border-green-400"
       onClick={onAddReviewToggle}
     >
@@ -31,7 +33,7 @@ const AddReview: React.FC<AddReviewProps> = ({
         />
       </svg>
       {reviewLabel}
-    </button>
+    </Button>
   );
 };
 

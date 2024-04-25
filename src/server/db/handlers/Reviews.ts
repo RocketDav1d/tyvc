@@ -21,6 +21,18 @@ function reviewsHandler() {
   });
 }
 
+function reviewsForFundHandler(fundId: string) {
+  return prisma.review.findMany({
+    where: {
+      fundId,
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+  });
+}
+
+
 async function createReviewHandler(
   reviewData: Partial<Review>,
   userId: string
@@ -37,4 +49,9 @@ async function createReviewHandler(
   });
 }
 
-export { reviewsForUser, reviewsHandler, createReviewHandler };
+export {
+  reviewsForUser,
+  reviewsHandler,
+  createReviewHandler,
+  reviewsForFundHandler,
+};

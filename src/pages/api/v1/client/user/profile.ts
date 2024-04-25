@@ -11,15 +11,16 @@ type ApiHandlerFunction = (
 ) => Promise<any>;
 
 /**
- * /api/v1/user/profile
+ * /api/v1/client/user/profile
  * Available methods: GET
  *
  * GET: Get user profile
  *
  * @param req The next api request
  * @param res A response handler
- * @returns user details
+ * @returns data: userDetails
  */
+
 export function makeUserProfileHandler(): ApiHandlerFunction {
   return async (req: NextApiRequest, res: NextApiResponse, userDetails) => {
     try {

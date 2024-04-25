@@ -1,7 +1,10 @@
+import Link from 'next/link';
+
 import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 
 export interface ReviewSmallProps {
+  id: string;
   avatar: string;
   name: string;
   rating: number;
@@ -14,6 +17,7 @@ export interface ReviewSmallProps {
 }
 
 const ReviewSmall: React.FC<ReviewSmallProps> = ({
+  id,
   avatar,
   name,
   rating,
@@ -102,7 +106,9 @@ const ReviewSmall: React.FC<ReviewSmallProps> = ({
 
           <div className="2nd-child flex items-center">
             <div className="flex-col">
-              <h2 className="text-lg font-semibold">{name}</h2>
+              <Link href={`/app/funds/${id}`}>
+                <h2 className="text-lg font-semibold">{name}</h2>
+              </Link>
 
               <div className="flex items-center gap-1">
                 <div className="flex items-center">

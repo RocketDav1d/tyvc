@@ -13,7 +13,10 @@ export enum UserRole {
 
 async function getUserByEmail(email: string) {
   try {
-    const user = userByEmailHandler(email);
+    const user = await userByEmailHandler(email);
+    if (user && user.onboardingData) {
+      user.onboardingData = JSON.parse(user.onboardingData as string);
+    }
     return user;
   } catch (e) {
     logger.error(e);

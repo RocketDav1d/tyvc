@@ -1,5 +1,25 @@
 export const DAYS = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
 
+const formatDate = (date: Date): string => {
+  const dateTimeFormat = new Intl.DateTimeFormat('de', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    weekday: 'long',
+  });
+  const [
+    { value: weekday },
+    ,
+    { value: day },
+    ,
+    { value: month },
+    ,
+    { value: year },
+    ,
+  ] = dateTimeFormat.formatToParts(date);
+  return `${weekday} ${day}.${month}.${year}`;
+};
+
 export const formatDateString = (dateRaw: string): string => {
   const date = dateRaw ? new Date(dateRaw) : Date.now();
   const dateTimeFormat = new Intl.DateTimeFormat('de', {

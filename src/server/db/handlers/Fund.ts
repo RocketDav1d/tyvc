@@ -4,6 +4,8 @@ import prisma from '@/server/db/prisma';
 import { translate } from '@/server/translate';
 import { logger } from '@/utils/logger';
 
+
+
 function fundByIdHandler(fundId: string) {
   return prisma.fund.findUnique({
     where: {
@@ -180,4 +182,13 @@ async function removeFundById(fundId: string) {
   });
 }
 
-export { fundByIdHandler, importFundHandler, removeFundById };
+async function fundIdsHandler() {
+  const funds = await prisma.fund.findMany({
+    select: {
+      id: true,
+    },
+  });
+  return funds.map((fund) => fund.id);
+}
+
+export { fundByIdHandler, importFundHandler, removeFundById, fundIdsHandler };

@@ -36,6 +36,11 @@ const nextConfig = {
         destination: '/app/dashboard',
         permanent: true,
       },
+      {
+        source: '/app',
+        destination: '/app/dashboard',
+        permanent: true,
+      },
     ];
   },
   transpilePackages: ['@mui/x-charts']
