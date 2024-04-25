@@ -2,7 +2,7 @@ import { Diversity } from '@prisma/client';
 
 import prisma from '@/server/db/prisma';
 import { translate } from '@/server/translate';
-
+import { logger } from '@/utils/logger';
 
 function angelByIdHandler(angelId: string) {
   return prisma.businessAngel.findUnique({
@@ -110,60 +110,91 @@ async function importAngelHandler(body: any) {
     );
   }
 
+  logger.debug("Holding Vehicle", body.HoldingVehicle)
+
+
   // Holding Vehicle - Create
-  const holdingVehicleData =
-    body.HoldingVehicle && body.HoldingVehicle.length > 0
-      ? {
-          create: {
-            id: body.HoldingVehicle[0].id,
-            name: body.HoldingVehicle[0].Name,
-            register: body.HoldingVehicle[0].register,
-            registerNumber: body.HoldingVehicle[0].registerNumber,
-          },
-        }
-      : undefined;
+  let holdingVehicleData;
+  if (body.HoldingVehicle && body.HoldingVehicle.length > 0) {
+    holdingVehicleData = await prisma.holdingVehicle.upsert({
+      where: { id: body.HoldingVehicle[0].id },
+      update: {
+        name: body.HoldingVehicle[0].Name,
+        register: body.HoldingVehicle[0].register,
+        registerNumber: body.HoldingVehicle[0].registerNumber,
+        registerCourt: body.HoldingVehicle[0].registerCourt,
+      },
+      create: {
+        id: body.HoldingVehicle[0].id,
+        name: body.HoldingVehicle[0].Name,
+        register: body.HoldingVehicle[0].register,
+        registerNumber: body.HoldingVehicle[0].registerNumber,
+        registerCourt: body.HoldingVehicle[0].registerCourt,
+      },
+    });
+  }
+
 
   // FoundendCompanies - Create
-  const foundedCompaniesData =
-    body.founded_companies && body.founded_companies.length > 0
-      ? {
-          createMany: {
-            data: body.founded_companies.map((fc: any) => ({
-              name: fc.company,
-              id: fc.id,
-              status: fc.status,
-              logo: fc.founded_company_logo,
-            })),
+  let foundedCompaniesData = [];
+  if (body.founded_companies && body.founded_companies.length > 0) {
+    foundedCompaniesData = await Promise.all(
+      body.founded_companies.map((fc: any) =>
+        prisma.foundedCompanies.upsert({
+          where: { id: fc.id },
+          update: {
+            name: fc.company,
+            status: fc.status,
+            logo: fc.founded_company_logo,
           },
-        }
-      : undefined;
+          create: {
+            id: fc.id,
+            name: fc.company,
+            status: fc.status,
+            logo: fc.founded_company_logo,
+          },
+        })
+      )
+    );
+  }
 
-  // Jobs - Create
-  const jobsData =
-  body.jobs && body.jobs.length > 0
-    ? {
-        createMany: {
-          data: body.jobs.map((job: any) => ({
+  // Jobs - Create or Update
+  let jobsData = [];
+  if (body.jobs && body.jobs.length > 0) {
+    jobsData = await Promise.all(
+      body.jobs.map((job: any) =>
+        prisma.jobs.upsert({
+          where: { id: job.id },
+          update: {
+            title: job.title,
+            startingYear: job.startingYear,
+            endingYear: job.endingYear || "",
+            status: job.status,
+            companyName: job.company,
+          },
+          create: {
             id: job.id,
             title: job.title,
             startingYear: job.startingYear,
-            endingYear: job.endingYear || '',
+            endingYear: job.endingYear || "",
             status: job.status,
             companyName: job.company,
-          })),
-        },
-      }
-    : undefined;
+          },
+        })
+      )
+    );
+  }
+
 
   const data = {
     id: body.SupabaseID,
     payloadID: body.SupabaseID,
     name: body.name,
-    slug: body.name,
+    slug: body.username,
     email: body.email,
     phoneNumber: body.phoneNumber,
     about: body.about || '',
-    about_english: await translate(body.about),
+    about_english: body.about ? await translate(body.about) : '',
     profilePicture: body.image,
     coInvestors: coInvestorConnections,
     ...(validBoardPositionConnections.length > 0 && {
@@ -172,7 +203,7 @@ async function importAngelHandler(body: any) {
       },
     }),
     ...(validMediaConnections.length > 0 && {
-      media: {
+      media_items: {
         connect: validMediaConnections,
       },
     }),
@@ -187,10 +218,25 @@ async function importAngelHandler(body: any) {
     stages: body.stages || [],
     proRataRights: body.pro_rata_rights || false,
     location: body.location || '',
-    location_english: await translate(body.location),
-    ...(holdingVehicleData && { holdingVehicle: holdingVehicleData }),
-    ...(foundedCompaniesData && { foundedCompanies: foundedCompaniesData }),
-    ...(jobsData && { jobs: jobsData }),
+    location_english: body.location ? await translate(body.location): '',
+    holdingVehicle: holdingVehicleData
+    ? {
+        connect: { id: holdingVehicleData.id },
+      }
+    : undefined,
+    ...(foundedCompaniesData.length > 0 && {
+      foundedCompanies: {
+        connect: foundedCompaniesData.map((fc: any) => ({ id: fc.id })),
+      },
+    }),
+    ...(jobsData.length > 0 && {
+      jobs: {
+        connect: jobsData.map((job: any) => ({ id: job.id })),
+      },
+    }),
+    // ...(holdingVehicleData && { holdingVehicle: holdingVehicleData }),
+    // ...(foundedCompaniesData && { foundedCompanies: foundedCompaniesData }),
+    // ...(jobsData && { jobs: jobsData }),
     linkedIn: body.socials.linkedIn || '',
     twitter: body.socials.twitter || '',
     medium: body.socials.medium || '',

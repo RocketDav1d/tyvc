@@ -6,8 +6,6 @@ import Link from 'next/link';
 import { signOut } from 'next-auth/react';
 
 import { MainNav } from '@/components/dashboard/main-nav';
-
-
 import { UserNav } from '@/components/dashboard/user-nav';
 
 type AppLayoutProps = {

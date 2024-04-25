@@ -389,6 +389,7 @@ model HoldingVehicle {
   name               String
   register           String?
   registerNumber     String?
+  registerCourt      String?
 
   businessAngelId String? @unique
   businessAngel   BusinessAngel? @relation(fields: [businessAngelId], references: [id])
@@ -413,8 +414,8 @@ model FoundedCompanies {
   // failed          Boolean @default(false)
   logo            String?
 
-  businessAngelId String
-  businessAngel   BusinessAngel @relation(fields: [businessAngelId], references: [id])
+  businessAngelId String?
+  businessAngel   BusinessAngel? @relation(fields: [businessAngelId], references: [id])
 }
 
 
@@ -434,8 +435,8 @@ model Jobs {
   startingYear    String
   endingYear      String?
 
-  businessAngelId String
-  businessAngel   BusinessAngel @relation(fields: [businessAngelId], references: [id])
+  businessAngelId String?
+  businessAngel   BusinessAngel? @relation(fields: [businessAngelId], references: [id])
 }
 
 

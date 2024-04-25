@@ -24,10 +24,10 @@ async function importFundHandler(body: any) {
       : [];
   let mediaConnections =
     body.media && body.media.length > 0
-      ? body.media.map((mediaId: string) => ({
-          where: { id: mediaId },
-          create: { id: mediaId, title: 'Default Title' },
-        }))
+      ? body.media.map((mediaId: string) => ({ id: mediaId }))
+
+
+
       : [];
   let officeConnections =
     body.offices && body.offices.length > 0
@@ -90,13 +90,14 @@ async function importFundHandler(body: any) {
     id: body.SupabaseID,
     payloadID: body.SupabaseID,
     name: body.name,
-    slug: body.name,
+    slug: body.username,
     PEorVC: body.PEorVC,
     username: body.username,
     logo: body.logo,
     image: body.image,
-    about: body.about || '',
-    about_english: await translate(body.about),
+    description: body.about || '',
+    about: body.about,
+    about_english: body.about ? await translate(body.about) : '',
     email: body.email,
     website: body.socials.website,
     medium: body.socials.medium,
@@ -119,7 +120,7 @@ async function importFundHandler(body: any) {
       media_items: { connect: deckConnections },
     }),
     ...(mediaConnections.length > 0 && {
-      media_items: { connectOrCreate: mediaConnections },
+      media_items: { connect: mediaConnections },
     }),
     ...(referenceCallVideoConnections.length > 0 && {
       media_items: { connect: referenceCallVideoConnections },
