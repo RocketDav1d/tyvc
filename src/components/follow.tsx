@@ -1,3 +1,4 @@
+
 import React from 'react';
 
 import { Button } from './ui/button';
@@ -21,7 +22,7 @@ const Follow: React.FC<FollowProps> = ({
 
   return (
     <Button
-      className="flex items-center px-5 py-1 text-tyvc-green bg-white border rounded-md border-grey active:bg-red-500 active:border-red-500"
+      className="flex items-center px-5 py-1 text-tyvc-green bg-white border rounded-md border-grey active:bg-red-500 active:border-red-500 dark:text-white dark:bg-dark-accent dark:border-gray-700"
       onClick={onFollowToggle}
     >
       <svg
@@ -35,9 +36,9 @@ const Follow: React.FC<FollowProps> = ({
         <path
           d={svgPath}
           stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         />
       </svg>
       {isFollowing ? followLabel : unfollowLabel}

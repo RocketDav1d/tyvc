@@ -2,7 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
+html,
+body {
+  font-family: 'Inter', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+}
+
 _next, html, body {
     width: 100% !important;
     height: 100% !important;
+}
+
+.ais-Hits-item, .ais-InfiniteHits-item {
+  background-color: inherit !important;
+}
+
+.ais-SearchBox-input {
+  background-color: inherit !important;
 }

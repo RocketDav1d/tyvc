@@ -1,4 +1,4 @@
-import { Employee, Fund } from '@prisma/client';
+import { BusinessAngel } from '@prisma/client';
 import { GetServerSideProps, Metadata } from 'next';
 
 import InvestorHeader from '@/components/investor_profile/investor-header';
@@ -7,22 +7,22 @@ import { Assets, PayloadAsset } from '@/utils/assets';
 import { logger } from '@/utils/logger';
 
 export const metadata: Metadata = {
-  title: 'Investor',
+  title: 'Angel Details',
   description: '',
 };
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const { investorId } = context.params as { investorId?: string };
-  if (!investorId) {
+  const { angelId } = context.params as { angelId?: string };
+  if (!angelId) {
     // Handle the case where fundId is not provided
-    throw new Error('investorId is required');
+    throw new Error('angelId is required');
   }
 
-  logger.debug('Fetching data for investorId: ', investorId);
+  logger.debug('Fetching data for angelId: ', angelId);
 
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/investors/${investorId}`,
+      `${process.env.NEXT_PUBLIC_API_URL}/angels/${angelId}`,
       {
         headers: {
           cookie: context.req.headers.cookie || '',
@@ -31,39 +31,32 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     );
 
     const json = await res.json();
-    let investor = json.data ? json.data : null;
+    let angel = json.data ? json.data : null;
 
-    logger.debug('Fetched investor data: ', investor);
+    logger.debug('Fetched angel data: ', angel);
 
     return {
-      props: { investor },
+      props: { angel },
     };
   } catch (error) {
-    logger.debug('Error fetching investor data:', error);
+    logger.debug('Error fetching angel data:', error);
     return {
-      props: { investor: null },
+      props: { angel: null },
     };
   }
 };
 
-export default function InvestorPage({
-  investor,
-}: {
-  investor: Employee & { funds: Fund[] };
-}) {
+export default function AngelPage({ angel }: { angel: BusinessAngel }) {
   return (
     <AppLayout>
       <InvestorHeader
         logoSrc={PayloadAsset.fromFilename(
-          investor?.profilePicture,
+          angel.profilePicture,
           Assets.FundLogoFallback
         )}
-        backgroundSrc={PayloadAsset.fromFilename(
-          investor?.funds[0].image,
-          Assets.HeaderImageFallback
-        )}
-        name={`${investor?.firstName} ${investor?.lastName}`}
-        bio={investor?.about ? investor.about : ''}
+        backgroundSrc={Assets.HeaderImageFallback}
+        name={`${angel?.name}`}
+        bio={angel?.about ? angel.about : ''}
         isVerified={true}
         socialLinks={[]}
         isFollowed={true}

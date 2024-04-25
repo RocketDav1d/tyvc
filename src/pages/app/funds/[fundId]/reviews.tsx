@@ -82,11 +82,7 @@ export default function FundReviewsPage({ fund }: { fund: Fund }) {
         unfollowLabel="Unfollow"
         onReview={() => {}}
       />
-      <div className="w-full h-screen flex flex-col px-8 py-8 bg-gray-50">
-
-
-
-
+      <div className="w-full h-screen flex flex-col px-8 py-8">
         <div className="space-y-4">
           {[
             {
@@ -111,7 +107,6 @@ export default function FundReviewsPage({ fund }: { fund: Fund }) {
             </div>
           ))}
         </div>
-
       </div>
     </AppLayout>
   );

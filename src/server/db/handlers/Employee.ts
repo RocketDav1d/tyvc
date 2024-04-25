@@ -5,10 +5,17 @@ import prisma from '@/server/db/prisma';
 import { translate } from '@/server/translate';
 import { logger } from '@/utils/logger';
 
+function employeesHandler() {
+  return prisma.employee.findMany();
+}
+
 async function employeeByIdHandler(employeeId: string) {
   return prisma.employee.findUnique({
     where: {
       id: employeeId,
+    },
+    include: {
+      funds: true,
     },
   });
 }
@@ -122,4 +129,9 @@ async function removeEmployeeById(employeeId: string) {
   });
 }
 
-export { employeeByIdHandler, importEmployeeHandler, removeEmployeeById };
+export {
+  employeeByIdHandler,
+  importEmployeeHandler,
+  removeEmployeeById,
+  employeesHandler,
+};

@@ -21,14 +21,23 @@ const AppLayout = ({ children }: AppLayoutProps) => {
       <PageHead title="Home" />
       <div className={`dashboard-layout ${inter.className}`}>
         <div className="flex flex-col">
-          <div className="border-b">
+          <div className="border-b dark:border-gray-700">
             <div className="h-16 flex items-center px-4">
               <Link href="/app/dashboard">
                 <img
-                  src={Assets.LogoWithText}
-                  alt="Logo"
+                  src={Assets.LogoLightWithText}
+                  alt="Logo Light"
                   width={120}
                   height={'auto'}
+                  className="block dark:hidden"
+                />
+
+                <img
+                  src={Assets.LogoDarkWithText}
+                  alt="Logo Dark"
+                  width={120}
+                  height={'auto'}
+                  className="hidden dark:block"
                 />
               </Link>
               {/* <TeamSwitcher /> */}
@@ -41,7 +50,6 @@ const AppLayout = ({ children }: AppLayoutProps) => {
           </div>
           {children}
         </div>
-
       </div>
     </>
   );

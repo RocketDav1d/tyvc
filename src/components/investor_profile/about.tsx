@@ -20,18 +20,15 @@ export interface AboutProps {
   investorData: InvestorData;
 }
 
-
 // The FC type from React is used to define a functional component with TypeScript
 const About: FC<AboutProps> = ({ investorData }) => {
   return (
-    <Card className="w-full h-auto">
+    <Card className="w-full h-auto bg-white border dark:bg-dark-accent dark:border-gray-700">
       {' '}
       {/* Adjust width as needed */}
       <CardHeader>
         <CardTitle>About</CardTitle>
         <CardDescription>{investorData.about}</CardDescription>
-
-
       </CardHeader>
       <CardContent>
         <div className="flex flex-col space-y-4">
@@ -62,7 +59,6 @@ const About: FC<AboutProps> = ({ investorData }) => {
             </div>
 
             <div className="flex items-center">
-
               {investorData.sectors.map((sector, index) => (
                 <Badge
                   className="mr-2 font-normal text-gray-500 rounded"

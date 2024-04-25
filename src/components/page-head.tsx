@@ -1,16 +1,13 @@
 import Head from 'next/head';
 
-
 type PageHeadProps = {
   title: string;
 };
 
 function PageHead({ title }: PageHeadProps) {
-
-
   return (
     <Head>
-      <title>{`TYVC | ${title}`}</title>
+      <title>{`${title} | TYVC`}</title>
       <meta name="description" content="TYVC" />
       <meta
         name="viewport"

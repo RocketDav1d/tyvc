@@ -6,7 +6,7 @@ import FundHeader from '@/components/funds/fund-header';
 import About from '@/components/investor_profile/about';
 import { Icons } from '@/components/ui/icons';
 import AppLayout from '@/layouts/app-layout';
-import { PayloadAsset } from '@/utils/assets';
+import { Assets, PayloadAsset } from '@/utils/assets';
 import { logger } from '@/utils/logger';
 
 export const metadata: Metadata = {
@@ -20,7 +20,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     throw new Error('fundId is required');
   }
 
-  logger.debug('Fetching data for fundId: ', fundId);
+  logger.info('Fetching data for fundId: ', fundId);
 
   try {
     const res = await fetch(
@@ -35,13 +35,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     const json = await res.json();
     let fund = json.data ? json.data : null;
 
-    logger.debug('Fetched fund data: ', fund);
+    logger.info('Fetched fund data: ', fund);
 
     return {
       props: { fund },
     };
   } catch (error) {
-    logger.debug('Error fetching fund data:', error);
+    logger.info('Error fetching fund data:', error);
     return {
       props: { fund: null },
     };
@@ -56,25 +56,30 @@ export default function FundPage({ fund }: { fund: Fund }) {
   return (
     <AppLayout>
       <FundHeader
-        logoSrc={new PayloadAsset(fund.logo).url}
-        backgroundSrc={new PayloadAsset(fund.logo).url}
+        logoSrc={PayloadAsset.fromFilename(fund.logo)}
+        backgroundSrc={PayloadAsset.fromFilename(
+          fund.image,
+          Assets.HeaderImageFallback
+        )}
         title={fund.name}
         description={fund.description ? fund.description : ''}
         isVerified={true}
         socialLinks={[
-          { icon: <Icons.twitter />, href: fund.linkedIn ? fund.linkedIn : '' },
-          { icon: <Icons.twitter />, href: fund.twitter ? fund.twitter : '' },
-          { icon: <Icons.twitter />, href: fund.medium ? fund.medium : '' },
-          { icon: <Icons.twitter />, href: fund.youTube ? fund.youTube : '' },
-          {
-            icon: <Icons.twitter />,
-            href: fund.instagram ? fund.instagram : '',
-          },
-        ]}
-        tabs={[
-          { title: 'Overview', content: <div>Overview Content</div> },
-          { title: 'Portfolio', content: <div>Portfolio Content</div> },
-          { title: 'Team', content: <div>Team Content</div> },
+          ...(fund.linkedIn
+            ? [{ icon: <Icons.linkedin />, href: fund.linkedIn }]
+            : []),
+          ...(fund.twitter
+            ? [{ icon: <Icons.twitter />, href: fund.twitter }]
+            : []),
+          ...(fund.medium
+            ? [{ icon: <Icons.medium />, href: fund.medium }]
+            : []),
+          ...(fund.youTube
+            ? [{ icon: <Icons.youtube />, href: fund.youTube }]
+            : []),
+          ...(fund.instagram
+            ? [{ icon: <Icons.instagram />, href: fund.instagram }]
+            : []),
         ]}
         isFollowing={true}
         onFollowToggle={() => {}}
@@ -82,8 +87,8 @@ export default function FundPage({ fund }: { fund: Fund }) {
         unfollowLabel="Unfollow"
         onReview={() => {}}
       />
-      <div className="w-full flex flex-col px-8 py-8 bg-gray-50">
-        <div className="grid grid-cols-2 grid-rows-2 gap-4">
+      <div className="w-full h-screen flex flex-col px-8 py-8 bg-gray-50 dark:bg-dark-primary">
+        <div className="container grid grid-cols-2 gap-4 mx-auto">
           <About
             investorData={{
               about: fund.about ? fund.about : '',
@@ -92,7 +97,6 @@ export default function FundPage({ fund }: { fund: Fund }) {
               ticketSizes: [fund.ticketSize ? fund.ticketSize : ''],
             }}
           />
-
           {/* <FundGenerations fundGenerations={[]} /> */}
         </div>
       </div>

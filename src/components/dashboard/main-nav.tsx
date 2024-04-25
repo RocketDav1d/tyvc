@@ -73,7 +73,7 @@ export function MainNav({
         <span>Investor Search</span>
       </Link>
 
-      <Link
+      {/* <Link
         href="/app/knowledge-base"
         className={`flex items-center text-sm font-medium transition-colors ${router.pathname === '/app/knowledge-base' ? 'text-tyvc-green' : 'hover:text-tyvc-green'}`}
       >
@@ -98,7 +98,7 @@ export function MainNav({
           />
         </svg>
         <span>Knowledge Base</span>
-      </Link>
+      </Link> */}
     </nav>
   );
 }

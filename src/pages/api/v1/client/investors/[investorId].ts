@@ -1,8 +1,7 @@
-
-import { BusinessAngel } from '@prisma/client';
+import { Employee } from '@prisma/client';
 import { NextApiRequest, NextApiResponse } from 'next';
 
-import { angelBySlugHandler } from '@/server/db/handlers/Angel';
+import { employeeByIdHandler } from '@/server/db/handlers/Employee';
 import { withProtect } from '@/server/middleware/withProtect';
 import { UserRole, withRoles } from '@/server/middleware/withRoles';
 import {
@@ -16,47 +15,47 @@ type ApiHandlerFunction = (
   res: NextApiResponse
 ) => Promise<void>;
 
-type FetchAngelFunction = (angelId: string) => Promise<BusinessAngel | null>;
+type FetchInvestorFunction = (investorId: string) => Promise<Employee | null>;
 
-type MakeAngelHandlerProps = {
-  fetchAngelFunction: FetchAngelFunction;
+type MakeInvestorHandlerProps = {
+  fetchInvestorFunction: FetchInvestorFunction;
 };
 
 /**
- * /api/v1/client/angels/[angelId]
+ * /api/v1/client/investors/[investorId]
  * Available methods: GET
  *
- * GET: Get an angel by id
+ * GET: Get an investor by id
  *
  * @param req The next api request
  * @param res A response handler
- * @returns data: angel
+ * @returns data: fund
  */
 
-export function makeAngelHandler(
-  makeProps: MakeAngelHandlerProps
+export function makeInvestorHandler(
+  makeProps: MakeInvestorHandlerProps
 ): ApiHandlerFunction {
   return async (req: NextApiRequest, res: NextApiResponse) => {
-    const { fetchAngelFunction } = makeProps;
-    const { angelId } = req.query;
+    const { fetchInvestorFunction } = makeProps;
+    const { investorId } = req.query;
+
+    if (typeof investorId !== 'string') {
+      return res
+        .status(HTTP_RESPONSE_CODE.BAD_REQUEST)
+        .json(errorMessageJSON('Investor Id must be a string'));
+    }
 
     switch (req.method) {
       case 'GET':
         try {
-          if (typeof angelId !== 'string') {
-            return res
-              .status(HTTP_RESPONSE_CODE.BAD_REQUEST)
-              .json(errorMessageJSON('Angel ID must be a string'));
-          }
-
-          const angel = await fetchAngelFunction(angelId);
-          if (!angel) {
+          const investor = await fetchInvestorFunction(investorId);
+          if (!investor) {
             return res
               .status(HTTP_RESPONSE_CODE.NOT_FOUND)
-              .json(errorMessageJSON('Angel not found'));
+              .json(errorMessageJSON('Investor not found'));
           }
 
-          return res.status(HTTP_RESPONSE_CODE.OK).json({ data: angel });
+          return res.status(HTTP_RESPONSE_CODE.OK).json({ data: investor });
         } catch (e: any) {
           return res
             .status(HTTP_RESPONSE_CODE.SERVER_ERROR)
@@ -66,7 +65,6 @@ export function makeAngelHandler(
               )
             );
         }
-        break;
       default:
         return res
           .status(HTTP_RESPONSE_CODE.METHOD_NOT_ALLOWED)
@@ -75,8 +73,8 @@ export function makeAngelHandler(
   };
 }
 
-const angelHandler = makeAngelHandler({
-  fetchAngelFunction: angelBySlugHandler,
+const fundHandler = makeInvestorHandler({
+  fetchInvestorFunction: employeeByIdHandler,
 });
 
-export default withProtect(withRoles(angelHandler, UserRole.USER));
+export default withProtect(withRoles(fundHandler, UserRole.USER));

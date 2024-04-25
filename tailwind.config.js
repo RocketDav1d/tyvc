@@ -17,7 +17,8 @@ module.exports = {
       },
     },
     extend: {
-      width: { // Add this block
+      width: {
+        // Add this block
         'fit-content': 'fit-content',
       },
       keyframes: {
@@ -36,7 +37,9 @@ module.exports = {
       },
       colors: {
         'tyvc-green': '#69E07C',
-      }
+        'dark-accent': '#1A1A1A',
+        'dark-primary': '#121212',
+      },
     },
   },
   plugins: [require('tailwindcss-animate')],

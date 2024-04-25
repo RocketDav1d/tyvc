@@ -53,56 +53,6 @@ export default function FundAboutPage({ fund }: { fund: Fund }) {
     return <div>Not found</div>;
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   return (
     <AppLayout>
       <FundHeader
@@ -137,8 +87,8 @@ export default function FundAboutPage({ fund }: { fund: Fund }) {
         unfollowLabel="Unfollow"
         onReview={() => {}}
       />
-      <div className="w-full h-screen flex flex-col px-8 py-8 bg-gray-50">
-        <div className="grid grid-cols-3 grid-rows-1 gap-4">
+      <div className="w-full h-screen flex flex-col px-8 py-8">
+        <div className="container grid grid-cols-2 grid-rows-1 gap-4">
           <About
             investorData={{
               about: fund.about ? fund.about : '',
