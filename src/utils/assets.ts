@@ -3,17 +3,18 @@ export class Assets {
   static LogoDark = '/assets/logo-dark.svg';
   static LogoWithText = '/assets/logo-with-text.png';
   static FundLogoFallback = '/assets/logo.svg';
+  static HeaderImageFallback = '/assets/header-fallback.svg';
   static VerifyEmailAnimation = '/assets/signup/verify-email-animation.png';
 }
 
 export class PayloadAsset {
-  public url: string;
+  static fromFilename(filename: string | null, fallback?: string) {
+    if (filename) {
+      return `${process.env.NEXT_PUBLIC_PAYLOAD_BASE_URL}/files/${filename}`;
 
-  constructor(public id: string | null) {
-    if (!id) {
-      this.url = Assets.FundLogoFallback;
+
     }
+    return fallback ? fallback : Assets.FundLogoFallback;
 
-    this.url = `${process.env.NEXT_PUBLIC_PAYLOAD_BASE_URL}/files/${id}`;
   }
 }

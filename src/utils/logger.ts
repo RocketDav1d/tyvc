@@ -1,4 +1,7 @@
 export const logger = {
+  info: (...args: any[]) => {
+    console.info(...args);
+  },
   debug: (...args: any[]) => {
     if (
       process.env.NODE_ENV === 'development' ||

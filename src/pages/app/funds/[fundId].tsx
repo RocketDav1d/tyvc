@@ -3,8 +3,7 @@ import { Metadata } from 'next';
 import { GetServerSideProps } from 'next';
 
 import FundHeader from '@/components/funds/fund-header';
-import About from '@/components/investor-profile/about';
-
+import About from '@/components/investor_profile/about';
 import { Icons } from '@/components/ui/icons';
 import AppLayout from '@/layouts/app-layout';
 import { PayloadAsset } from '@/utils/assets';

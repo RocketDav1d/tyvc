@@ -15,7 +15,11 @@ function userByIdHandler(id: string) {
 
 function checkUserOnboardingStatus(email: string) {
   return prisma.user
-    .findUnique({ where: { email } })
+    .findUnique({
+      where: { email },
+      select: { onboardingStatus: true },
+      cacheStrategy: { ttl: 60, swr: 30 },
+    })
     .then((user) => user?.onboardingStatus);
 }
 
@@ -24,14 +28,6 @@ function usersHandler() {
     orderBy: { firstName: 'asc' },
   });
 }
-
-
-
-
-
-
-
-
 
 async function updateUserByIdHandler(
   userId: string,
