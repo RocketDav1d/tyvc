@@ -2,6 +2,7 @@ import { v4 as uuidv4 } from 'uuid';
 
 import prisma from '@/server/db/prisma';
 import { generateSlug } from '@/server/utils';
+import { translate } from '@/server/utils';
 import { logger } from '@/utils/logger';
 
 function fundByIdHandler(fundId: string) {
@@ -93,7 +94,8 @@ async function importFundHandler(body: any) {
     username: body.username,
     logo: body.logo,
     image: body.image,
-    description: body.about || '',
+    about: body.about || '',
+    about_english: await translate(body.about),
     email: body.email,
     website: body.socials.website,
     medium: body.socials.medium,
@@ -107,6 +109,8 @@ async function importFundHandler(body: any) {
     stages: body.investmentCriteria.stages,
     ticketSize: body.investmentCriteria.ticketSize,
     phoneNumber: body.phoneNumber.toString(),
+    contactPerson: body.contactPerson,
+    info: body.info,
     coInvestors: notableCoInvestorConnections,
     // ...(notableCoInvestorConnections.length > 0 && { notableCoInvestors: { connect: notableCoInvestorConnections } }),
 

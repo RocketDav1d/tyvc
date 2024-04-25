@@ -1,6 +1,7 @@
 import { Diversity } from '@prisma/client';
 
 import prisma from '@/server/db/prisma';
+import { translate } from '@/server/utils';
 import { logger } from '@/utils/logger';
 
 async function employeeByIdHandler(employeeId: string) {
@@ -37,7 +38,9 @@ async function importEmployeeHandler(body: any) {
     position: body.position,
     email: body.email,
     about: body.about,
+    about_english: await translate(body.about),
     location: body.location,
+    location_english: await translate(body.location),
     phone: body.phoneNumber.toString(),
     startingYear: body.startingYear.toString(),
     linkedIn: body.socials.linkedIn || '',

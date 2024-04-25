@@ -19,6 +19,12 @@ function mapType(type: string): MEDIA_TYPE {
       return MEDIA_TYPE.VIDEO;
     case 'podcast':
       return MEDIA_TYPE.PODCAST;
+    case 'document':
+      return MEDIA_TYPE.DOCUMENT;
+    case 'referenceCall':
+      return MEDIA_TYPE.REFERENCE_CALL;
+    case 'deck':
+    return MEDIA_TYPE.DECK;
     default:
       return MEDIA_TYPE.ARTICLE; // Default to ARTICLE if type is unrecognized
   }

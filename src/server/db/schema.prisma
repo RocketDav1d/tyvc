@@ -125,6 +125,7 @@ model GamificationAward {
 enum VCorPE {
   VC
   PE
+  Both
 }
 
 model Fund {
@@ -144,6 +145,8 @@ model Fund {
   skills       String[]
   ticketSize   String?
   description  String?
+  about         String?
+  about_english String?
   foundingDate DateTime?
 
   color         String?
@@ -157,6 +160,8 @@ model Fund {
   email         String?
   phoneNumber   String?
   pitchFormular String?
+  contactPerson String? // ID of an Employee
+  info          String?
 
   // portfolioCompanies PortfolioCompany[]
   employees          Employee[]
@@ -202,13 +207,15 @@ model Employee {
   firstName String
   lastName  String
 
-  position   String?
+  position   String[]
   stage      String[]
   sector     String[]
   about      String?
+  about_english String?
   skill      String[]
   university String?
   location   String?
+  location_english String?
 
   profilePicture String?
   startingYear   String?
@@ -337,10 +344,12 @@ model BusinessAngel {
 
   profilePicture String?
   location       String?
+  location_english  String?
   topics         String[]
   stages         String[]
   sector         String[]
   about          String?
+  about_english  String?
   university     String?
   foundingDate   DateTime?
 
@@ -392,6 +401,7 @@ enum FOUNDEN_COMPANY_STATUS {
   CURRENT
   EXIT
   FAILED
+  LEFT
 }
 
 model FoundedCompanies {
@@ -420,7 +430,9 @@ model Jobs {
   companyName     String
   title           String
   status          JOBS_STATUS
-  years           String
+  // years           String
+  startingYear    String
+  endingYear      String?
 
   businessAngelId String
   businessAngel   BusinessAngel @relation(fields: [businessAngelId], references: [id])
@@ -461,6 +473,7 @@ model PortfolioCompany {
 
   logo            String?
   about           String?
+  about_english   String?
   sector          String[]
   // investmentStage String
   // investmentDate  String?
@@ -512,6 +525,8 @@ enum MEDIA_TYPE {
   ARTICLE
   VIDEO
   DOCUMENT
+  REFERENCE_CALL
+  DECK
 }
 
 model Media {

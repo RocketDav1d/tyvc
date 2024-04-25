@@ -1,5 +1,6 @@
 import prisma from '@/server/db/prisma';
 import { generateSlug } from '@/server/utils';
+import { translate } from '@/server/utils';
 import { logger } from '@/utils/logger';
 
 import { mapDiversityToCompany } from './utils';
@@ -22,6 +23,7 @@ async function importCompanyHandler(body: any) {
     slug: generateSlug(body.name),
     logo: body.logo,
     about: body.about || '',
+    about_english: await translate(body.about),
     sector: body.sectors,
     valuation: body.valuation ? body.valuation.toString() : '',
     diversity: mapDiversityToCompany(body.diversity),

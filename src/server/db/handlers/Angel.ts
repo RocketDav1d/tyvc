@@ -2,6 +2,7 @@ import { Diversity } from '@prisma/client';
 
 import prisma from '@/server/db/prisma';
 import { generateSlug } from '@/server/utils';
+import { translate } from '@/server/utils';
 
 function angelByIdHandler(angelId: string) {
   return prisma.businessAngel.findUnique({
@@ -139,19 +140,20 @@ async function importAngelHandler(body: any) {
 
   // Jobs - Create
   const jobsData =
-    body.jobs && body.jobs.length > 0
-      ? {
-          createMany: {
-            data: body.jobs.map((job: any) => ({
-              id: job.id,
-              title: job.title,
-              years: job.years,
-              status: job.status,
-              companyName: job.company,
-            })),
-          },
-        }
-      : undefined;
+  body.jobs && body.jobs.length > 0
+    ? {
+        createMany: {
+          data: body.jobs.map((job: any) => ({
+            id: job.id,
+            title: job.title,
+            startingYear: job.startingYear,
+            endingYear: job.endingYear || '',
+            status: job.status,
+            companyName: job.company,
+          })),
+        },
+      }
+    : undefined;
 
   const data = {
     id: body.SupabaseID,
@@ -161,6 +163,7 @@ async function importAngelHandler(body: any) {
     email: body.email,
     phoneNumber: body.phoneNumber,
     about: body.about || '',
+    about_english: await translate(body.about),
     profilePicture: body.image,
     coInvestors: coInvestorConnections,
     ...(validBoardPositionConnections.length > 0 && {
@@ -184,6 +187,7 @@ async function importAngelHandler(body: any) {
     stages: body.stages || [],
     proRataRights: body.pro_rata_rights || false,
     location: body.location || '',
+    location_english: await translate(body.location),
     ...(holdingVehicleData && { holdingVehicle: holdingVehicleData }),
     ...(foundedCompaniesData && { foundedCompanies: foundedCompaniesData }),
     ...(jobsData && { jobs: jobsData }),

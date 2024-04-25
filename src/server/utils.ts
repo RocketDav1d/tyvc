@@ -1,3 +1,7 @@
+import * as deepl from 'deepl-node';
+
+import { logger } from '@/utils/logger';
+
 const HTTP_RESPONSE = {
   UNEXPECTED_ERROR: 'Unexpected Error',
   NOT_AUTHENTICATED: 'Not Authenticated',
@@ -74,4 +78,22 @@ const generateSlug = (text: string): string => {
   ); // Append the random ID
 };
 
-export { errorMessageJSON, dataJSON, formatDate, generateSlug };
+const translate = async (text: string): Promise<string> => {
+  const authKey = process.env.DEEPL_API_KEY;
+
+  if (!authKey) {
+    logger.debug('DEEPL_API_KEY is not defined');
+    throw new Error('DEEPL_API_KEY is not defined');
+  }
+
+  const translator = new deepl.Translator(authKey);
+  const result = await (async () => {
+    const translation = await translator.translateText(text, null, 'fr');
+    console.log(translation.text); // Bonjour, le monde !
+    return translation.text;
+  })();
+
+  return result;
+}
+
+export { errorMessageJSON, dataJSON, formatDate, generateSlug, translate };
