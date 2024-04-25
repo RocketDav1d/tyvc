@@ -1,3 +1,5 @@
+import { Diversity } from '@prisma/client';
+
 import prisma from '@/server/db/prisma';
 import { logger } from '@/utils/logger';
 
@@ -9,14 +11,29 @@ async function employeeByIdHandler(employeeId: string) {
   });
 }
 
+function mapDiversityToEnum(diversity: string): Diversity {
+  switch (diversity.toLowerCase()) {
+    case 'black_female':
+      return Diversity.BLACK_FEMALE;
+    case 'white_female':
+      return Diversity.WHITE_FEMALE;
+    case 'whit_male':
+      return Diversity.WHITE_MALE;
+    case 'black_male':
+      return Diversity.BLACK_MALE;
+    default:
+      return Diversity.WHITE_MALE;
+  }
+}
+
 async function importEmployeeHandler(body: any) {
   logger.debug('importEmployeeHandler', body);
 
   const data: any = {
     id: body.SupabaseID,
     payloadID: body.SupabaseID,
-    firstName: body.name ? body.name.split(' ')[0] : '',
-    lastName: body.name ? body.name.split(' ').slice(1).join(' ') : '',
+    firstName: body.firstName,
+    lastName: body.lastName,
     position: body.position,
     email: body.email,
     about: body.about,
@@ -29,6 +46,12 @@ async function importEmployeeHandler(body: any) {
     youTube: body.socials.youTube || '',
     instagram: body.socials.instagram || '',
     newsletter: body.socials.newsletter || '',
+    profilePicture: body.logo,
+    sector: body.sectors,
+    skill: body.skills,
+    university: body.university,
+    languages: body.languages,
+    diversity: mapDiversityToEnum(body.diversity),
   };
 
   if (body.investments) {
@@ -55,12 +78,15 @@ async function importEmployeeHandler(body: any) {
     };
   }
 
-  return prisma.employee.create({
-    data,
+  return prisma.employee.upsert({
+    where: { id: body.SupabaseID },
+    update: data,
+    create: data,
   });
 }
 
 async function removeEmployeeById(employeeId: string) {
+  logger.debug('Insider removeEmployeeById', employeeId);
   return prisma.employee.delete({
     where: {
       id: employeeId,

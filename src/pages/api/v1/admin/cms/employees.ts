@@ -72,7 +72,7 @@ export function makeEmployeeHandler(makeProps: MakeEmployeeProps) {
         }
 
         case 'DELETE': {
-          const { SupabaseID } = req.query;
+          const { SupabaseID } = req.body;
           if (typeof SupabaseID !== 'string') {
             return res
               .status(HTTP_RESPONSE_CODE.BAD_REQUEST)

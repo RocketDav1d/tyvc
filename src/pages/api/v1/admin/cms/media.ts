@@ -49,16 +49,17 @@ export function makeContentHandler(makeProps: MakeMediaProps) {
           });
         }
         case 'DELETE': {
-          if (!req.body || !req.body.SupabaseID) {
-            return res
-              .status(HTTP_RESPONSE_CODE.BAD_REQUEST)
-              .json(errorMessageJSON('SupabaseID is required.'));
-          }
           const { SupabaseID } = req.body;
-          await deleteMediaFunction(SupabaseID);
-          return res
-            .status(HTTP_RESPONSE_CODE.OK)
-            .json({ message: 'Media deleted successfully.' });
+          if (!SupabaseID) {
+            return res.status(HTTP_RESPONSE_CODE.BAD_REQUEST).json({
+              message: 'Invalid request body. SupabaseID is required.',
+            });
+          }
+          const deletionResult = await deleteMediaFunction(SupabaseID);
+          return res.status(HTTP_RESPONSE_CODE.OK).json({
+            message: 'Board deleted successfully.',
+            data: deletionResult,
+          });
         }
         default:
           res.setHeader('Allow', ['POST', 'DELETE']);

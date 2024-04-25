@@ -1,3 +1,4 @@
+
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
@@ -121,13 +122,21 @@ model GamificationAward {
   updatedAt DateTime @default(now())
 }
 
+enum VCorPE {
+  VC
+  PE
+}
+
 model Fund {
   id   String @id @default(uuid())
   payloadID     String @unique
   name String
   slug String @unique
 
+  PEorVC       VCorPE?
+  username     String?
   logo         String?
+  image        String?
   headquarter  String?
   topics       String[]
   stages       String[]
@@ -156,11 +165,8 @@ model Fund {
   media_items        Media[]
   reviews            Review[]
   investments        Investment[]
-
+  board         Board[]
   coInvestors String[]
-
-  board   Board? @relation(fields: [boardId], references: [id])
-  boardId String? @unique
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
@@ -246,12 +252,11 @@ model Board {
   description String?
   status      BOARD_STATUS @default(ACTIVE)
   year        String?
+  fund      Fund? @relation(fields: [fundId], references: [id])
+  fundId    String?
 
-  fund      Fund?
-  fundId    String? @unique
-
-  company   PortfolioCompany?
-  companyId String? @unique
+  company   PortfolioCompany? @relation(fields: [companyId], references: [id])
+  companyId String?
 
   employee   Employee? @relation(fields: [employeeId], references: [id])
   employeeId String?
@@ -402,11 +407,19 @@ model FoundedCompanies {
   businessAngel   BusinessAngel @relation(fields: [businessAngelId], references: [id])
 }
 
+
+enum JOBS_STATUS {
+  CURRENT
+  LEFT
+  FIRED
+  OTHER
+}
+
 model Jobs {
   id              String @id @default(uuid())
   companyName     String
   title           String
-  status          String
+  status          JOBS_STATUS
   years           String
 
   businessAngelId String
@@ -449,9 +462,9 @@ model PortfolioCompany {
   logo            String?
   about           String?
   sector          String[]
-  investmentStage String
-  investmentDate  String?
-  funding         String?
+  // investmentStage String
+  // investmentDate  String?
+  // funding         String?
   valuation       String?
   diversity       CompanyDiversity @default(ONLY_WHITE_MALE_FOUNDERS)
 
@@ -464,8 +477,9 @@ model PortfolioCompany {
   // businessAngels BusinessAngel[]
   investments Investment[]
 
-  board   Board? @relation(fields: [boardId], references: [id])
-  boardId String? @unique
+  // board   Board? @relation(fields: [boardId], references: [id])
+  // boardId String? @unique
+  board   Board[]
 
   updatedAt DateTime @default(now())
 }
@@ -476,6 +490,7 @@ model Investment {
   amount           Float?
   announcedAt      DateTime?
   investmentDate   DateTime?
+  investmentStage   String?
 
   employees        Employee[]
 
@@ -496,6 +511,7 @@ enum MEDIA_TYPE {
   PODCAST
   ARTICLE
   VIDEO
+  DOCUMENT
 }
 
 model Media {

@@ -1,6 +1,7 @@
 import { MEDIA_TYPE } from '@prisma/client';
 
 import prisma from '@/server/db/prisma';
+import { logger } from '@/utils/logger';
 
 function mediaItemForId(mediaId: string) {
   return prisma.media.findUnique({
@@ -24,42 +25,48 @@ function mapType(type: string): MEDIA_TYPE {
 }
 
 async function importMediaHandler(body: any) {
-  return prisma.media.create({
-    data: {
-      id: body.SupabaseID,
-      payloadID: body.SupabaseID,
-      title: body.title,
-      type: mapType(body.type),
-      description: body.description,
-      url: body.url,
-      thumbnail: body.thumbnail,
-      publishedAt: body.publishedAt ? new Date(body.publishedAt) : null,
-      // ...(body.fundId && {
-      //   fund: {
-      //     connect: {
-      //       id: body.fundId,
-      //     },
-      //   },
-      // }),
-      // ...(body.publisherId && {
-      //   publisher: {
-      //     connectOrCreate: {
-      //       where: {
-      //         id: body.publisherId,
-      //       },
-      //       create: {
-      //         name: body.publisherName,
-      //         url: body.publisherUrl,
-      //         logo: body.publisherLogo,
-      //         foundingDate: body.publisherFoundingDate
-      //           ? new Date(body.publisherFoundingDate)
-      //           : null,
-      //         description: body.publisherDescription,
-      //       },
-      //     },
-      //   },
-      // }),
-    },
+  logger.debug('importOfficeHandler', body);
+
+  const data: any = {
+    id: body.SupabaseID,
+    payloadID: body.SupabaseID,
+    title: body.title,
+    type: mapType(body.mediaType),
+    description: body.description,
+    url: body.url,
+    thumbnail: body.thumbnail,
+    publishedAt: body.publishedAt ? new Date(body.publishedAt) : null,
+    // ...(body.fundId && {
+    //   fund: {
+    //     connect: {
+    //       id: body.fundId,
+    //     },
+    //   },
+    // }),
+    // ...(body.publisherId && {
+    //   publisher: {
+    //     connectOrCreate: {
+    //       where: {
+    //         id: body.publisherId,
+    //       },
+    //       create: {
+    //         name: body.publisherName,
+    //         url: body.publisherUrl,
+    //         logo: body.publisherLogo,
+    //         foundingDate: body.publisherFoundingDate
+    //           ? new Date(body.publisherFoundingDate)
+    //           : null,
+    //         description: body.publisherDescription,
+    //       },
+    //     },
+    //   },
+    // }),
+  };
+
+  return prisma.media.upsert({
+    where: { id: body.SupabaseID },
+    update: data,
+    create: data,
   });
 }
 

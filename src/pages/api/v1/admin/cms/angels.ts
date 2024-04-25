@@ -119,14 +119,14 @@ export function makeBusinessAngelHandler(makeProps: MakeBusinessAngelProps) {
           }
         }
         case 'DELETE': {
-          if (!req.body.SupabaseID) {
+          const { SupabaseID } = req.body;
+          logger.debug('DELETE INVESTMENT SupabaseID', SupabaseID);
+          if (!SupabaseID) {
             return res.status(HTTP_RESPONSE_CODE.BAD_REQUEST).json({
               message: 'Invalid request body. SupabaseID is required.',
             });
           }
-          const angelId = req.body.SupabaseID;
-
-          const deletionResult = await handleDeleteBusinessAngel(angelId);
+          const deletionResult = await handleDeleteBusinessAngel(SupabaseID);
           return res.status(HTTP_RESPONSE_CODE.OK).json({
             message: 'BusinessAngel deleted successfully.',
             data: deletionResult,

@@ -49,6 +49,7 @@ export function makeInvestmentHandler(makeProps: MakeInvestmentProps) {
         }
         case 'DELETE': {
           const { SupabaseID } = req.body;
+          logger.debug('DELETE INVESTMENT SupabaseID', SupabaseID);
           if (!SupabaseID) {
             return res.status(HTTP_RESPONSE_CODE.BAD_REQUEST).json({
               message: 'Invalid request body. SupabaseID is required.',

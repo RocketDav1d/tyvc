@@ -22,25 +22,28 @@ async function importBoardHandler(body: any) {
     year: body.year,
   };
 
-  if (body.boardSeatOn && body.boardSeatOn.length > 0) {
-    const boardSeat = body.boardSeatOn[0];
-    if (boardSeat.portfoliocompany) {
-      data.company = {
-        connect: {
-          id: boardSeat.portfoliocompany,
-        },
-      };
-    } else if (boardSeat.fund) {
-      data.fund = {
-        connect: {
-          id: boardSeat.fund,
-        },
-      };
-    }
+  if (body.portfoliocompany && body.portfoliocompany.trim() !== '') {
+    data.company = {
+      connect: {
+        id: body.portfoliocompany,
+      },
+    };
+    // data.companyId = body.portfoliocompany;
   }
 
-  return prisma.board.create({
-    data,
+  if (body.funds && body.funds.length > 0 && body.funds[0].trim() !== '') {
+    data.fund = {
+      connect: {
+        id: body.funds[0],
+      },
+    };
+    // data.fundId = body.funds[0];
+  }
+
+  return prisma.board.upsert({
+    where: { id: body.SupabaseID },
+    update: data,
+    create: data,
   });
 }
 

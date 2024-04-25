@@ -16,8 +16,9 @@ async function importInvestmentHandler(body: any) {
     id: body.SupabaseID,
     payloadID: body.SupabaseID,
     amount: body.amount,
-    announcedAt: body.announcedAt,
-    investmentDate: body.investment_date,
+    announcedAt: new Date(body.anouncedAt),
+    investmentDate: new Date(body.investmentDate),
+    investmentStage: body.investmentStage,
     //   fundId: body.fundId,
     //   businessAngelId: body.businessAngelId,
     portfolioCompany: {
@@ -33,12 +34,15 @@ async function importInvestmentHandler(body: any) {
     };
   }
 
-  return prisma.investment.create({
-    data,
+  return prisma.investment.upsert({
+    where: { id: body.SupabaseID },
+    update: data,
+    create: data,
   });
 }
 
 async function removeInvestmentById(investmentId: string) {
+  logger.debug('InsideremoveInvestmentById', investmentId);
   return prisma.investment.delete({
     where: {
       id: investmentId,

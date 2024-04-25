@@ -113,12 +113,12 @@ async function importAngelHandler(body: any) {
   const holdingVehicleData =
     body.HoldingVehicle && body.HoldingVehicle.length > 0
       ? {
-          create: body.HoldingVehicle.map((hv: any) => ({
-            id: hv.id,
-            name: hv.Name,
-            register: hv.register,
-            registerNumber: hv.registerNumber,
-          })),
+          create: {
+            id: body.HoldingVehicle[0].id,
+            name: body.HoldingVehicle[0].Name,
+            register: body.HoldingVehicle[0].register,
+            registerNumber: body.HoldingVehicle[0].registerNumber,
+          },
         }
       : undefined;
 
@@ -126,12 +126,14 @@ async function importAngelHandler(body: any) {
   const foundedCompaniesData =
     body.founded_companies && body.founded_companies.length > 0
       ? {
-          create: body.founded_companies.map((fc: any) => ({
-            name: fc.Name,
-            id: fc.id,
-            status: fc.status,
-            logo: fc.logo,
-          })),
+          createMany: {
+            data: body.founded_companies.map((fc: any) => ({
+              name: fc.company,
+              id: fc.id,
+              status: fc.status,
+              logo: fc.founded_company_logo,
+            })),
+          },
         }
       : undefined;
 
@@ -139,94 +141,65 @@ async function importAngelHandler(body: any) {
   const jobsData =
     body.jobs && body.jobs.length > 0
       ? {
-          create: body.jobs.map((job: any) => ({
-            id: job.id,
-            title: job.title,
-            years: job.years,
-            status: job.status,
-            companyName: job.company,
-          })),
+          createMany: {
+            data: body.jobs.map((job: any) => ({
+              id: job.id,
+              title: job.title,
+              years: job.years,
+              status: job.status,
+              companyName: job.company,
+            })),
+          },
         }
       : undefined;
 
-  return prisma.businessAngel.create({
-    data: {
-      payloadID: body.payloadID,
-      name: body.name,
-      slug: generateSlug(body.name),
-      // holdingVehicle: {
-      //   create: {
-      //     id: body.HoldingVehicle[0].id,
-      //     name: body.HoldingVehicle[0].Name,
-      //     register: body.HoldingVehicle[0].register,
-      //     registerNumber: body.HoldingVehicle[0].registerNumber,
-      //   },
-      // },
-      email: body.email,
-      phoneNumber: body.phoneNumber,
-      about: body.about || '',
-      profilePicture: body.image,
-      coInvestors: coInvestorConnections,
-      // boardPositions: {
-      //   create: body.boardPositions.map((bp: any) => {
-      //     return {
-      //       id: bp.id,
-      //       title: bp.Title,
-      //       years: bp.Years,
-      //       status: bp.Status,
-      //       company: bp.Company,
-      //     };
-      //   }),
-      // },
-      ...(validBoardPositionConnections.length > 0 && {
-        boardPositions: {
-          connect: validBoardPositionConnections,
-        },
-      }),
-      ...(validMediaConnections.length > 0 && {
-        media: {
-          connect: validMediaConnections,
-        },
-      }),
-      ...(validInvestmentConnections.length > 0 && {
-        investments: {
-          connect: validInvestmentConnections,
-        },
-      }),
-      website: body.website || '',
-      diversity: mapDiversityToEnum(body.diversity),
-      ticketSize: body.ticket_size || '',
-      stages: body.stages || [],
-      proRataRights: body.pro_rata_rights || false,
-      location: body.location || '',
-      ...(holdingVehicleData && { holdingVehicle: holdingVehicleData }),
-      ...(foundedCompaniesData && { foundedCompanies: foundedCompaniesData }),
-      ...(jobsData && { jobs: jobsData }),
-      // foundedCompanies: {
-      //   create: body.founded_companies.map((fc: any) => ({
-      //     name: fc.Name,
-      //     id: fc.id,
-      //     status: fc.status,
-      //     logo: fc.logo
-      //   })),
-      // },
-      // jobs: {
-      //   create: body.jobs.map((job: any) => ({
-      //     id: job.id,
-      //     title: job.title,
-      //     years: job.years,
-      //     status: job.status,
-      //     companyName: job.company,
-      //   })),
-      // },
-      linkedIn: body.socials.linkedIn || '',
-      twitter: body.socials.twitter || '',
-      medium: body.socials.medium || '',
-      youTube: body.socials.youTube || '',
-      instagram: body.socials.instagram || '',
-      newsletter: body.socials.newsletter || '',
-      createdAt: new Date(body.createdAt || Date.now()),
-    },
+  const data = {
+    id: body.SupabaseID,
+    payloadID: body.SupabaseID,
+    name: body.name,
+    slug: generateSlug(body.name),
+    email: body.email,
+    phoneNumber: body.phoneNumber,
+    about: body.about || '',
+    profilePicture: body.image,
+    coInvestors: coInvestorConnections,
+    ...(validBoardPositionConnections.length > 0 && {
+      boardPositions: {
+        connect: validBoardPositionConnections,
+      },
+    }),
+    ...(validMediaConnections.length > 0 && {
+      media: {
+        connect: validMediaConnections,
+      },
+    }),
+    ...(validInvestmentConnections.length > 0 && {
+      investments: {
+        connect: validInvestmentConnections,
+      },
+    }),
+    website: body.website || '',
+    diversity: mapDiversityToEnum(body.diversity),
+    ticketSize: body.ticket_size || '',
+    stages: body.stages || [],
+    proRataRights: body.pro_rata_rights || false,
+    location: body.location || '',
+    ...(holdingVehicleData && { holdingVehicle: holdingVehicleData }),
+    ...(foundedCompaniesData && { foundedCompanies: foundedCompaniesData }),
+    ...(jobsData && { jobs: jobsData }),
+    linkedIn: body.socials.linkedIn || '',
+    twitter: body.socials.twitter || '',
+    medium: body.socials.medium || '',
+    youTube: body.socials.youTube || '',
+    instagram: body.socials.instagram || '',
+    newsletter: body.socials.newsletter || '',
+    createdAt: new Date(body.createdAt || Date.now()),
+  };
+
+  return prisma.businessAngel.upsert({
+    where: { id: body.SupabaseID },
+    update: data,
+    create: data,
   });
 }
 
