@@ -1,6 +1,6 @@
 import prisma from '@/server/db/prisma';
+import { translate } from '@/server/translate';
 import { generateSlug } from '@/server/utils';
-import { translate } from '@/server/utils';
 import { logger } from '@/utils/logger';
 
 import { mapDiversityToCompany } from './utils';

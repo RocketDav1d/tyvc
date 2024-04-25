@@ -1,7 +1,7 @@
 import { Diversity } from '@prisma/client';
 
 import prisma from '@/server/db/prisma';
-import { translate } from '@/server/utils';
+import { translate } from '@/server/translate';
 import { logger } from '@/utils/logger';
 
 async function employeeByIdHandler(employeeId: string) {

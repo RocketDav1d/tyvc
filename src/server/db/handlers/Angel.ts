@@ -1,8 +1,8 @@
 import { Diversity } from '@prisma/client';
 
 import prisma from '@/server/db/prisma';
-import { generateSlug } from '@/server/utils';
-import { translate } from '@/server/utils';
+import { translate } from '@/server/translate';
+
 
 function angelByIdHandler(angelId: string) {
   return prisma.businessAngel.findUnique({
@@ -159,7 +159,7 @@ async function importAngelHandler(body: any) {
     id: body.SupabaseID,
     payloadID: body.SupabaseID,
     name: body.name,
-    slug: generateSlug(body.name),
+    slug: body.name,
     email: body.email,
     phoneNumber: body.phoneNumber,
     about: body.about || '',

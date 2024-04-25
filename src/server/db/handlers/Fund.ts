@@ -1,8 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 
 import prisma from '@/server/db/prisma';
-import { generateSlug } from '@/server/utils';
-import { translate } from '@/server/utils';
+import { translate } from '@/server/translate';
 import { logger } from '@/utils/logger';
 
 function fundByIdHandler(fundId: string) {
@@ -89,7 +88,7 @@ async function importFundHandler(body: any) {
     id: body.SupabaseID,
     payloadID: body.SupabaseID,
     name: body.name,
-    slug: generateSlug(body.name),
+    slug: body.name,
     PEorVC: body.PEorVC,
     username: body.username,
     logo: body.logo,
