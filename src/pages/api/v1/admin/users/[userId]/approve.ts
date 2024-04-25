@@ -8,7 +8,7 @@ import {
   HTTP_RESPONSE,
   HTTP_RESPONSE_CODE,
 } from '@/server/utils';
-import { sendNotificationEmail } from '@/utils/email/templates/notification';
+import { sendNotificationEmail } from '@/utils/email/handlers/notification';
 
 const approveUserHandler = async (
   req: NextApiRequest,

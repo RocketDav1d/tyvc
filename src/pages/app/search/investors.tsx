@@ -1,16 +1,18 @@
 import algoliasearch from 'algoliasearch/lite';
 import { Hit as AlgoliaHit } from 'instantsearch.js';
+import 'instantsearch.css/themes/satellite.css';
 import Link from 'next/link';
 import {
   InstantSearch,
-  HierarchicalMenu,
+
   Highlight,
   Hits,
   Menu,
-  RangeInput,
+
   RefinementList,
   SearchBox,
   ToggleRefinement,
+  DynamicWidgets,
 } from 'react-instantsearch';
 
 import AppLayout from '@/layouts/app-layout';
@@ -23,14 +25,15 @@ const searchClient = algoliasearch(
 type HitProps = {
   hit: AlgoliaHit<{
     name: string;
+    slug: string;
     price: number;
   }>;
 };
 
 function Hit({ hit }: HitProps) {
   return (
-    <Link href={`/app/funds/${hit.objectID}`}>
-      <Highlight hit={hit} attribute="name" className="Hit-label" />
+    <Link href={`/app/funds/${hit.slug}`}>
+      <Highlight hit={hit} attribute="name" className="hit-label" />
     </Link>
   );
 }
@@ -44,64 +47,42 @@ export default function InvestorsSearchPage() {
       >
         <div className="flex">
           <div className="w-1/4 p-4 bg-gray-50">
-            <div className="mb-4">
-              <SearchBox
-                placeholder="Search"
-                autoFocus
-                classNames={{ root: 'w-full', input: 'border p-2 w-full' }}
-              />
-            </div>
-            <div>
-              <RefinementList
-                attribute="brand"
-                searchable={true}
-                searchablePlaceholder="Search brand"
-                showMore={true}
-                classNames={{
-                  root: 'mb-4',
-                  list: 'space-y-2',
-                  item: 'flex justify-between items-center',
-                }}
-              />
-              <Menu
-                attribute="categories"
-                showMore={true}
-                classNames={{
-                  root: 'mb-4',
-                  list: 'space-y-2',
-                  item: 'flex justify-between items-center',
-                }}
-              />
-              <HierarchicalMenu
-                attributes={[
-                  'hierarchicalCategories.lvl0',
-                  'hierarchicalCategories.lvl1',
-                  'hierarchicalCategories.lvl2',
-                ]}
-                showMore={true}
-                classNames={{
-                  root: 'mb-4',
-                  list: 'space-y-2',
-                  item: 'flex justify-between items-center',
-                }}
-              />
-              <RangeInput
-                attribute="price"
-                precision={1}
-                classNames={{ root: 'mb-4', input: 'border p-2' }}
-              />
-              <ToggleRefinement
-                attribute="free_shipping"
-                label="Free shipping"
-                classNames={{ label: 'inline-flex items-center' }}
-              />
+            <div className="space-y-6">
+              <DynamicWidgets fallbackComponent={Menu}>
+                <ToggleRefinement
+                  attribute="PEorVC"
+                  label="Venture Capital Funds"
+                />
+                <RefinementList attribute="ticketSize" />
+
+                <RefinementList
+                  attribute="sector"
+                  operator="or"
+                  limit={8}
+                  showMore={true}
+                />
+
+                <RefinementList
+                  attribute="stages"
+                  operator="or"
+                  limit={8}
+                  showMore={true}
+                />
+              </DynamicWidgets>
             </div>
           </div>
           <div className="w-3/4 h-screen p-4 overflow-auto">
-            <Hits
-              hitComponent={Hit}
-              classNames={{ list: 'space-y-4', item: 'border p-4' }}
+            <SearchBox
+              placeholder="Search"
+              autoFocus
+              classNames={{ root: 'w-full', input: 'border p-2 w-full' }}
             />
+            <div className="mt-5">
+              <Hits
+                hitComponent={Hit}
+                classNames={{ list: 'space-y-4', item: 'border p-4' }}
+              />
+            </div>
           </div>
         </div>
       </InstantSearch>

@@ -6,11 +6,14 @@ import { translate } from '@/server/translate';
 import { logger } from '@/utils/logger';
 
 
+function fundsHandler() {
+  return prisma.fund.findMany();
+}
 
 function fundByIdHandler(fundId: string) {
   return prisma.fund.findUnique({
     where: {
-      id: fundId,
+      slug: fundId,
     },
   });
 }

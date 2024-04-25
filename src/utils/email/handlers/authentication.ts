@@ -1,7 +1,7 @@
 import { Resend } from 'resend';
 
 import { logger } from '@/utils/logger';
-import { loadAuthenticationTemplate } from '@/utils/templates/authentication';
+import TrustyourvcMagicLinkEmailEN from '@/utils/templates/magic-link-en';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -19,18 +19,18 @@ function sendAuthenticationEmail(
 
     logger.debug(props.to, props.from, props.url, host);
 
-    const html = await loadAuthenticationTemplate({
-      organizationLogoURL: '',
-      organizationName: 'TYVC',
-      siteHost: host,
-      loginButtonHref: props.url,
-    });
+    // const html = await loadAuthenticationTemplate({
+    //   organizationLogoURL: '',
+    //   organizationName: 'TYVC',
+    //   siteHost: host,
+    //   loginButtonHref: props.url,
+    // });
 
     const { data, error } = await resend.emails.send({
       from: props.from,
       to: props.to,
       subject: `TYVC | Login Service`,
-      html: html,
+      react: TrustyourvcMagicLinkEmailEN({ magicLink: props.url }),
     });
 
     logger.debug(data, error);

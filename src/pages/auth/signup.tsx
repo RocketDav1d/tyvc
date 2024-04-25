@@ -22,14 +22,14 @@ export default function SigninPage() {
         <p className="px-8 text-sm text-center text-muted-foreground">
           By clicking continue, you agree to our{' '}
           <Link
-            href="/terms"
+            href="https://trustyourvc.com/terms"
             className="underline underline-offset-4 hover:text-primary"
           >
             Terms of Service
           </Link>{' '}
           and{' '}
           <Link
-            href="/privacy"
+            href="https://trustyourvc.com/privacy"
             className="underline underline-offset-4 hover:text-primary"
           >
             Privacy Policy

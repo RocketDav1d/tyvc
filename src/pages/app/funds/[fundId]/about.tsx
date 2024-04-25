@@ -103,6 +103,7 @@ export default function FundAboutPage() {
   return (
     <AppLayout>
       <FundHeader
+        backgroundSrc=""
         logoSrc={mockFundData.logoSrc}
         title={mockFundData.title}
         description={mockFundData.description}

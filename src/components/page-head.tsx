@@ -1,16 +1,16 @@
 import Head from 'next/head';
-import { useTranslation } from 'next-i18next';
+
 
 type PageHeadProps = {
   title: string;
 };
 
 function PageHead({ title }: PageHeadProps) {
-  const { t } = useTranslation('common');
+
 
   return (
     <Head>
-      <title>{`${t('title')} | ${title}`}</title>
+      <title>{`TYVC | ${title}`}</title>
       <meta name="description" content="TYVC" />
       <meta
         name="viewport"

@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client/edge';
 import NextAuth from 'next-auth';
 import EmailProvider from 'next-auth/providers/email';
 
-import { sendAuthenticationEmail } from '@/utils/email/templates/authentication';
+import { sendAuthenticationEmail } from '@/utils/email/handlers/authentication';
 
 const prisma = new PrismaClient();
 

@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 import AddReview from '@/components/add-review';
@@ -7,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 
 interface FundHeaderProps {
   logoSrc: string;
+  backgroundSrc: string;
   title: string;
   description: string;
   isVerified: boolean;
@@ -21,6 +21,7 @@ interface FundHeaderProps {
 
 const FundHeader: React.FC<FundHeaderProps> = ({
   logoSrc,
+  backgroundSrc,
   title,
   description,
   isVerified,
@@ -34,9 +35,13 @@ const FundHeader: React.FC<FundHeaderProps> = ({
 }) => {
   return (
     <div className="bg-white rounded-lg shadow">
-      <img src={logoSrc} alt={`${title} logo`} className="w-full h-40" />
+      <img
+        src={backgroundSrc}
+        alt={`${title} logo`}
+        className="w-full h-40 object-cover"
+      />
       <div className="flex justify-center items-center px-8 py-2 border-b border-gray-200">
-        <div className="w-32 h-32">
+        <div className="w-48 h-32">
           <img
             src={logoSrc}
             alt={`${title} logo`}
