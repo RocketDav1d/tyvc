@@ -8,22 +8,26 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 
 import { ContactPersonForm } from './contact-person-form';
+import { PhoneInput } from '../ui/phone-input';
 
 function LimitedPartnerForm() {
-  const { watch, register, formState } = useFormContext();
+  const { watch, register, formState, setValue } = useFormContext();
 
   return (
     <Tabs
-      defaultValue="privatePerson"
+      defaultValue="organization"
       aria-label="Limited Partner Type"
       className="w-full mb-4"
     >
       <TabsList className="w-full">
-        <TabsTrigger value="privatePerson" className="w-full">
-          Private Person
-        </TabsTrigger>
+
+
+
         <TabsTrigger value="organization" className="w-full">
           Organization
+        </TabsTrigger>
+        <TabsTrigger value="privatePerson" className="w-full">
+          Private Person
         </TabsTrigger>
       </TabsList>
       <TabsContent value="privatePerson" className="w-full">
@@ -55,13 +59,14 @@ function LimitedPartnerForm() {
           </Label>
           <div className="flex items-center">
             <Input
-              type="range"
+              type="number"
               id="numberFundInvestments"
+              min="1"
               {...register('numberFundInvestments', { required: true })}
             />
-            <span className="ml-2 text-sm">
-              {watch('numberFundInvestments', 1)}
-            </span>
+
+
+
           </div>
           {formState.errors.numberFundInvestments && (
             <p className="mt-1 text-sm text-red-500">This field is required.</p>
@@ -70,6 +75,7 @@ function LimitedPartnerForm() {
           <Label htmlFor="email">E-Mail *</Label>
           <Input
             id="email"
+            type="email"
             placeholder="Your E-Mail"
             {...register('email', { required: true })}
           />
@@ -78,10 +84,13 @@ function LimitedPartnerForm() {
           )}
 
           <Label htmlFor="phoneNumber">Phone Number *</Label>
-          <Input
+          <PhoneInput
             id="phoneNumber"
             placeholder="Your Phone Number"
+            defaultCountry="DE"
+            value={watch('phoneNumber')}
             {...register('phoneNumber', { required: true })}
+            onChange={(value) => setValue('phoneNumber', value)}
           />
           {formState.errors.phoneNumber && (
             <p className="mt-1 text-sm text-red-500">
@@ -89,11 +98,25 @@ function LimitedPartnerForm() {
             </p>
           )}
 
-          <div className="flex items-center">
-            <Checkbox {...register('isHoldingVehicle')} className="rounded" />
-            <Label htmlFor="isHoldingVehicle" className="ml-2">
-              Is Holding Vehicle?
-            </Label>
+          <div className="flex flex-col">
+            <div className="flex items-center mb-2">
+              <Input
+                type="checkbox"
+                className="w-4 h-4"
+                {...register('isHoldingVehicle')}
+              />
+              <Label htmlFor="isHoldingVehicle" className="ml-2">
+                Do you invest through a holding company?
+              </Label>
+            </div>
+
+            {watch('isHoldingVehicle') ? (
+              <Input
+                id="holdingCompanyName"
+                placeholder="Holding Company Name *"
+                {...register('holdingCompanyName', { required: true })}
+              />
+            ) : null}
           </div>
 
           <Label htmlFor="linkedinUrl">LinkedIn URL</Label>
@@ -101,6 +124,7 @@ function LimitedPartnerForm() {
             id="linkedinUrl"
             placeholder="https://linkedin.com/in/your-profile"
             {...register('linkedinUrl')}
+            type="url"
           />
           {formState.errors.linkedinUrl && (
             <p className="mt-1 text-sm text-red-500">
@@ -145,7 +169,7 @@ function LimitedPartnerForm() {
               type="range"
               id="numberFundInvestments"
               min="1"
-              max="50"
+              max="100"
               className="bg-black"
               {...register('numberFundInvestments', {
                 required: true,
@@ -181,26 +205,34 @@ function LimitedPartnerForm() {
               <input
                 {...register('fundType', { required: true })}
                 type="radio"
-                value="ventureCapital"
-                id="ventureCapital"
+                value="pensionFund"
+                id="pensionFund"
               />
-              <Label htmlFor="ventureCapital">Venture Capital</Label>
+              <Label htmlFor="pensionFund">Pension Fund</Label>
 
               <input
                 {...register('fundType', { required: true })}
                 type="radio"
-                value="privateEquity"
-                id="privateEquity"
+                value="insuranceCompany"
+                id="insuranceCompany"
               />
-              <Label htmlFor="privateEquity">Private Equity</Label>
+              <Label htmlFor="insuranceCompany">Insurance Company</Label>
 
               <input
                 {...register('fundType', { required: true })}
                 type="radio"
-                value="both"
-                id="both"
+                value="fundOfFunds"
+                id="fundOfFunds"
               />
-              <Label htmlFor="both">Both</Label>
+              <Label htmlFor="fundOfFunds">Fund of Funds</Label>
+
+              <input
+                {...register('fundType', { required: true })}
+                type="radio"
+                value="other"
+                id="other"
+              />
+              <Label htmlFor="other">Other</Label>
             </div>
             {formState.errors.fundType && (
               <p className="mt-1 text-sm text-red-500">

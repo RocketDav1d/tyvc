@@ -59,7 +59,10 @@ const CompanyForm = ({
           <Input {...register(`${name}[${index}].register`)} />
 
           <Label htmlFor={`registerNumber-${index}`}>Register Number</Label>
-          <Input {...register(`${name}[${index}].registerNumber`)} />
+          <Input
+            {...register(`${name}[${index}].registerNumber`)}
+            placeholder="HRB 227389"
+          />
 
           <FounderPositionSelector name={`${name}[${index}].position`} />
 
@@ -100,7 +103,7 @@ const CompanyForm = ({
         </div>
       ))}
       <Button type="button" onClick={() => append({})}>
-        Add company
+        {fields.length > 0 ? 'Add another company' : 'Add company'}
       </Button>
     </div>
   );

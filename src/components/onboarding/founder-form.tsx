@@ -39,6 +39,7 @@ const FounderForm = React.forwardRef((ref) => {
         id="linkedinProfile"
         placeholder="https://linkedin.com/in/your-profile"
         {...register('linkedinProfile', { required: true })}
+        type="url"
       />
       {formState.errors.linkedinProfile && (
         <p className="mt-1 text-sm text-red-500">
@@ -47,13 +48,6 @@ const FounderForm = React.forwardRef((ref) => {
       )}
 
       <DiversitySelectorSimple name="diversity" />
-
-      <div className="flex items-center">
-        <Checkbox {...register('serialFounder')} className="rounded" />
-        <Label htmlFor="serialFounder" className="ml-2">
-          Are you a serial founder?
-        </Label>
-      </div>
 
       <div className="flex flex-col space-y-4">
         <Label className="block text-sm font-medium text-gray-700">

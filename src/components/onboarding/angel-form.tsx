@@ -6,8 +6,10 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
+import { PhoneInput } from '../ui/phone-input';
+
 function FounderForm() {
-  const { watch, register, formState } = useFormContext();
+  const { watch, register, formState, setValue } = useFormContext();
 
   return (
     <div className="flex flex-col mt-4 space-y-4">
@@ -37,7 +39,7 @@ function FounderForm() {
           type="range"
           id="numberInvestments"
           min="1"
-          max="50"
+          max="100"
           className="bg-black"
           {...register('numberInvestments', {
             required: true,
@@ -53,13 +55,21 @@ function FounderForm() {
       )}
 
       <Label htmlFor="email">E-Mail</Label>
-      <Input id="email" placeholder="Email" {...register('email')} />
+      <Input
+        id="email"
+        placeholder="Email"
+        {...register('email', { required: true })}
+        type="email"
+      />
 
       <Label htmlFor="phoneNumber">Phone Number</Label>
-      <Input
+      <PhoneInput
         id="phoneNumber"
-        placeholder="Phone Number"
-        {...register('phoneNumber')}
+        placeholder="Your Phone Number"
+        defaultCountry="DE"
+        value={watch('phoneNumber')}
+        {...register('phoneNumber', { required: true })}
+        onChange={(value) => setValue('phoneNumber', value)}
       />
 
       <Label htmlFor="linkedinUrl">LinkedIn URL</Label>
@@ -67,6 +77,7 @@ function FounderForm() {
         id="linkedinUrl"
         placeholder="https://linkedin.com/in/your-profile"
         {...register('linkedinUrl')}
+        type="url"
       />
 
       <Label htmlFor="website">Website</Label>
@@ -74,7 +85,29 @@ function FounderForm() {
         id="website"
         placeholder="https://yourwebsite.com"
         {...register('website')}
+        type="url"
       />
+
+      <div className="flex flex-col">
+        <div className="flex items-center mb-2">
+          <Input
+            type="checkbox"
+            className="w-4 h-4"
+            {...register('hasHoldingVehicle')}
+          />
+          <Label htmlFor="hasHoldingVehicle" className="ml-2">
+            Do you invest through a holding company?
+          </Label>
+        </div>
+
+        {watch('hasHoldingVehicle') ? (
+          <Input
+            id="holdingCompanyName"
+            placeholder="Holding Company Name *"
+            {...register('holdingCompanyName', { required: true })}
+          />
+        ) : null}
+      </div>
 
       <div className="flex items-center">
         <Checkbox

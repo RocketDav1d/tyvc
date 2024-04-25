@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 
+import { addUserSubmissionDataHandler } from '@/server/db/handlers/User';
 import { withProtect } from '@/server/middleware/withProtect';
 import { UserRole, withRoles } from '@/server/middleware/withRoles';
 import {
@@ -14,7 +15,7 @@ type ApiHandlerFunction = (
   payload: any
 ) => Promise<any>;
 
-type OnboardingSubmission = {
+export type OnboardingSubmission = {
   role: string;
   data: any; // Assuming 'data' is a generic object for user data. Adjust the type as needed.
 };
@@ -103,7 +104,7 @@ export function makeOnboardingSubmitHandler(
 
 const onboardingSubmitHandler = makeOnboardingSubmitHandler(
   // Replace 'addUserSubmissionData' with the actual function to add submission data
-  { addUserSubmissionData: async () => ({ success: true }) }
+  { addUserSubmissionData: addUserSubmissionDataHandler }
 );
 
 export default withProtect(withRoles(onboardingSubmitHandler, UserRole.USER));

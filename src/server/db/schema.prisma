@@ -56,6 +56,7 @@ model User {
   imageSrc         String?
   role             UserRole         @default(USER)
   onboardingStatus OnboardingStatus @default(PENDING)
+  onboardingData   Json?
 
   userProfiles UserProfile[]
   accounts     Account[]
@@ -71,6 +72,7 @@ enum OnboardingStatus {
   APPROVED
   REJECTED
   PENDING
+  IN_REVIEW
   CALL_SCHEDULED
 }
 

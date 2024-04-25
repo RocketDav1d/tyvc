@@ -3,7 +3,7 @@ import { logger } from '@/utils/logger';
 export const useOnboardingProfile = () => {
   async function submitOnboardingProfile(role: string, data: any) {
     try {
-      const response = await fetch('/api/v1/onboarding/submit', {
+      const response = await fetch('/api/v1/client/onboarding/submit', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

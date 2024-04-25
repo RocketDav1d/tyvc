@@ -4,7 +4,7 @@ import WaitlistWidget from '@/components/waitlist-widget';
 import OnboardingLayout from '@/layouts/onboarding-layout';
 
 export const metadata: Metadata = {
-  title: 'Application Under Review',
+  title: 'Application under Review',
   description:
     'Thank you for applying. We are currently reviewing your application.',
 };
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 export default function OnboardingReviewPage() {
   return (
     <OnboardingLayout
-      title={'Application Under Review'}
+      title={'Application under Review'}
       description={
         'Thank you for applying. We are currently reviewing your application.'
       }

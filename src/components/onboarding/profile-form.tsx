@@ -60,7 +60,7 @@ export function OnboardingProfileForm({ onSubmit }: OnboardingProfileFormProps) 
           </CardHeader>
           <CardContent className="flex flex-col space-y-4">
             <Label className="block text-sm font-medium text-gray-700">
-              Your role:
+              Your primary role:
             </Label>
             <Tabs
               defaultValue="founder"

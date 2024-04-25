@@ -24,13 +24,28 @@ function VCForm() {
         <p className="mt-1 text-sm text-red-500">Fund name is required.</p>
       )}
 
-      <Label htmlFor="fundWebsiteUrl">Fund Website URL</Label>
+      <Label htmlFor="fundWebsiteUrl">Fund Website</Label>
       <Input
         id="fundWebsiteUrl"
-        placeholder="https://"
+        placeholder="https://fund.com"
         {...register('fundWebsiteUrl')}
+        type="url"
       />
 
+      <Label htmlFor="numberFundInvestments">Number of Investments *</Label>
+      <div className="flex items-center">
+        <Input
+          type="number"
+          id="numberFundInvestments"
+          min="1"
+          {...register('numberFundInvestments', { required: true })}
+        />
+      </div>
+      {formState.errors.numberFundInvestments && (
+        <p className="mt-1 text-sm text-red-500">This field is required.</p>
+      )}
+
+      <Label htmlFor="fundType">Type of Fund *</Label>
       <RadioGroup
         defaultValue="ventureCapital"
         {...register('fundType', { required: true })}
