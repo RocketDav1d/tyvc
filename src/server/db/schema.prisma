@@ -1,4 +1,3 @@
-
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
@@ -122,6 +121,11 @@ model GamificationAward {
   updatedAt DateTime @default(now())
 }
 
+enum Status {
+  published
+  draft
+}
+
 enum VCorPE {
   VC
   PE
@@ -130,6 +134,7 @@ enum VCorPE {
 
 model Fund {
   id   String @id @default(uuid())
+  status        Status @default(published)
   payloadID     String @unique
   name String
   slug String @unique
@@ -164,7 +169,7 @@ model Fund {
   info          String?
 
   // portfolioCompanies PortfolioCompany[]
-  employees          Employee[]
+  employees          Employee[] @relation("EmployeeToFund")
   offices            Office[]
   generations        FundGeneration[]
   media_items        Media[]
@@ -173,12 +178,14 @@ model Fund {
   board         Board[]
   coInvestors String[]
 
+
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
 }
 
 model Office {
   id   String @id @default(uuid())
+  status        Status @default(published)
   payloadID     String @unique
   name String
 
@@ -202,6 +209,7 @@ model Office {
 
 model Employee {
   id String @id @default(uuid())
+  status        Status @default(published)
   payloadID     String @unique
 
   firstName String
@@ -234,8 +242,8 @@ model Employee {
   phone     String?
   diversity Diversity @default(WHITE_MALE)
 
-  boards       Board[]
-  funds        Fund[]
+  boards        Board[]
+  funds         Fund[] @relation("EmployeeToFund")
   investments  Investment[]
   userProfiles UserProfile[]
 
@@ -253,17 +261,27 @@ enum BOARD_STATUS {
 
 model Board {
   id String @id @default(uuid())
+  status        Status @default(published)
   payloadID     String @unique
 
   title       String
   description String?
-  status      BOARD_STATUS @default(ACTIVE)
-  year        String?
+  board_status      BOARD_STATUS @default(ACTIVE)
+  startingYear  String?
+  endingYear    String?
+  singleCompanyName   String?
+  singleCompanyNameURL String?
+
+
   fund      Fund? @relation(fields: [fundId], references: [id])
   fundId    String?
+  // fund      Fund? @relation
+  // fundId    String? @unique
 
   company   PortfolioCompany? @relation(fields: [companyId], references: [id])
   companyId String?
+  // company   PortfolioCompany? @relation
+  // companyId String? @unique
 
   employee   Employee? @relation(fields: [employeeId], references: [id])
   employeeId String?
@@ -278,14 +296,15 @@ model Board {
 model FundGeneration {
   id   String @id @default(uuid())
   name String
+  status      Status @default(published)
 
   description String?
   size        String?
   publishedAt DateTime?
   year        String?
 
-  fund   Fund   @relation(fields: [fundId], references: [id])
-  fundId String
+  fund   Fund?  @relation(fields: [fundId], references: [id])
+  fundId String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
@@ -338,6 +357,7 @@ enum CompanyDiversity {
 
 model BusinessAngel {
   id   String @id @default(uuid())
+  status        Status @default(published)
   payloadID     String @unique
   name String
   slug String @unique
@@ -345,13 +365,14 @@ model BusinessAngel {
   profilePicture String?
   location       String?
   location_english  String?
-  topics         String[]
+  skills         String[]
   stages         String[]
   sector         String[]
+  languages      String[]
   about          String?
   about_english  String?
   university     String?
-  foundingDate   DateTime?
+
 
   website       String?
   linkedIn      String?
@@ -362,7 +383,7 @@ model BusinessAngel {
   newsletter    String?
   email         String?
   phoneNumber   String?
-  pitchFormular String?
+
   ticketSize    String?
   diversity     Diversity @default(WHITE_MALE)
 
@@ -387,6 +408,7 @@ model BusinessAngel {
 model HoldingVehicle {
   id   String @id @default(uuid())
   name               String
+  status      Status @default(published)
   register           String?
   registerNumber     String?
   registerCourt      String?
@@ -408,7 +430,8 @@ enum FOUNDEN_COMPANY_STATUS {
 model FoundedCompanies {
   id              String @id @default(uuid())
   name            String
-  status          FOUNDEN_COMPANY_STATUS @default(CURRENT)
+  status          Status @default(published)
+  founded_company_status   FOUNDEN_COMPANY_STATUS @default(CURRENT)
   // current         Boolean @default(true)
   // exit            Boolean @default(false)
   // failed          Boolean @default(false)
@@ -430,7 +453,8 @@ model Jobs {
   id              String @id @default(uuid())
   companyName     String
   title           String
-  status          JOBS_STATUS
+  status          Status @default(published)
+  jobs_status     JOBS_STATUS @default(CURRENT)
   // years           String
   startingYear    String
   endingYear      String?
@@ -468,6 +492,7 @@ model Founder {
 
 model PortfolioCompany {
   id   String @id @default(uuid())
+  status        Status @default(published)
   payloadID     String @unique
   name String
   slug String @unique
@@ -500,6 +525,7 @@ model PortfolioCompany {
 
 model Investment {
   id               String    @id @default(uuid())
+  status        Status @default(published)
   payloadID        String @unique
   amount           Float?
   announcedAt      DateTime?
@@ -532,6 +558,7 @@ enum MEDIA_TYPE {
 
 model Media {
   id    String     @id @default(uuid())
+  status        Status @default(published)
   payloadID     String @unique
   title String
   type  MEDIA_TYPE @default(ARTICLE)

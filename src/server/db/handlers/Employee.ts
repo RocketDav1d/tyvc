@@ -1,4 +1,5 @@
 import { Diversity } from '@prisma/client';
+import { Status } from '@prisma/client';
 
 import prisma from '@/server/db/prisma';
 import { translate } from '@/server/translate';
@@ -28,6 +29,18 @@ function mapDiversityToEnum(diversity: string): Diversity {
 }
 
 async function importEmployeeHandler(body: any) {
+
+  if (body.status === Status.draft) {
+    const updateResult = await prisma.board.update({
+      where: { id: body.SupabaseID },
+      data: {
+        status: Status.draft,
+      },
+    });
+    logger.debug('unbpublished Employee with ID', body.SupabaseID);
+    return updateResult;
+  } else
+
   logger.debug('importEmployeeHandler', body);
 
   const data: any = {
@@ -41,8 +54,8 @@ async function importEmployeeHandler(body: any) {
     about_english: body.about ? await translate(body.about) : '',
     location: body.location,
     location_english: body.location ? await translate(body.location): '',
-    phone: body.phoneNumber.toString(),
-    startingYear: body.startingYear.toString(),
+    phone: body.phoneNumber ? body.phoneNumber.toString() : '',
+    startingYear: body.startingYear ? body.startingYear.toString() : '',
     linkedIn: body.socials.linkedIn || '',
     twitter: body.socials.twitter || '',
     medium: body.socials.medium || '',
@@ -73,19 +86,31 @@ async function importEmployeeHandler(body: any) {
     };
   }
 
-  if (body.office && body.office.length > 0) {
+  if (body.office) {
     data.office = {
-      connect: body.office.map((officeId: string) => ({
-        id: officeId,
-      })),
+      connect: {
+        id: body.office,
+      },
     };
   }
 
-  return prisma.employee.upsert({
-    where: { id: body.SupabaseID },
-    update: data,
-    create: data,
-  });
+
+  try {
+    const existingEmployee = await prisma.employee.findUnique({
+      where: { id: body.SupabaseID },
+    });
+    console.log("existing existingEmployee", existingEmployee); // Check if the record is found
+    const updateResult = await prisma.employee.upsert({
+      where: { id: body.SupabaseID },
+      create: data,
+      update: data,
+    });
+    console.log(updateResult);
+  } catch (error) {
+    console.log('Upsert operation failed', error);
+    logger.error('Upsert operation failed', error);
+    throw error; // re-throw the error after logging
+  }
 }
 
 async function removeEmployeeById(employeeId: string) {

@@ -1,4 +1,5 @@
 import { Diversity } from '@prisma/client';
+import { Status } from '@prisma/client';
 
 import prisma from '@/server/db/prisma';
 import { translate } from '@/server/translate';
@@ -28,6 +29,41 @@ function mapDiversityToEnum(diversity: string): Diversity {
 }
 
 async function importAngelHandler(body: any) {
+
+  if (body.status === Status.draft) {
+    const updateResult = await prisma.businessAngel.update({
+      where: { id: body.SupabaseID },
+      data: {
+        status: Status.draft,
+      },
+    });
+
+    await prisma.holdingVehicle.updateMany({
+      where: { businessAngelId: body.SupabaseID },
+      data: {
+        status: Status.draft,
+      },
+    });
+
+    await prisma.foundedCompanies.updateMany({
+      where: { businessAngelId: body.SupabaseID },
+      data: {
+        status: Status.draft,
+      },
+    });
+
+    await prisma.jobs.updateMany({
+      where: { businessAngelId: body.SupabaseID },
+      data: {
+        status: Status.draft,
+      },
+    });
+
+    logger.debug('unbpublished Angel with ID', body.SupabaseID);
+    return updateResult;
+  } else {
+
+
   let validBoardPositionConnections = [];
   let validMediaConnections = [];
   let validInvestmentConnections = [];
@@ -120,12 +156,14 @@ async function importAngelHandler(body: any) {
       where: { id: body.HoldingVehicle[0].id },
       update: {
         name: body.HoldingVehicle[0].Name,
+        status: Status.published,
         register: body.HoldingVehicle[0].register,
         registerNumber: body.HoldingVehicle[0].registerNumber,
         registerCourt: body.HoldingVehicle[0].registerCourt,
       },
       create: {
         id: body.HoldingVehicle[0].id,
+        status: Status.published,
         name: body.HoldingVehicle[0].Name,
         register: body.HoldingVehicle[0].register,
         registerNumber: body.HoldingVehicle[0].registerNumber,
@@ -135,7 +173,7 @@ async function importAngelHandler(body: any) {
   }
 
 
-  // FoundendCompanies - Create
+  // FoundendCompanies - Create or Update
   let foundedCompaniesData = [];
   if (body.founded_companies && body.founded_companies.length > 0) {
     foundedCompaniesData = await Promise.all(
@@ -143,14 +181,16 @@ async function importAngelHandler(body: any) {
         prisma.foundedCompanies.upsert({
           where: { id: fc.id },
           update: {
+            status: Status.published,
             name: fc.company,
-            status: fc.status,
+            founded_company_status: fc.founded_company_status,
             logo: fc.founded_company_logo,
           },
           create: {
             id: fc.id,
+            status: Status.published,
             name: fc.company,
-            status: fc.status,
+            founded_company_status: fc.founded_company_status,
             logo: fc.founded_company_logo,
           },
         })
@@ -166,18 +206,20 @@ async function importAngelHandler(body: any) {
         prisma.jobs.upsert({
           where: { id: job.id },
           update: {
+            status: Status.published,
             title: job.title,
             startingYear: job.startingYear,
             endingYear: job.endingYear || "",
-            status: job.status,
+            jobs_status: job.jobs_status,
             companyName: job.company,
           },
           create: {
             id: job.id,
+            status: Status.published,
             title: job.title,
             startingYear: job.startingYear,
             endingYear: job.endingYear || "",
-            status: job.status,
+            jobs_status: job.jobs_status,
             companyName: job.company,
           },
         })
@@ -194,6 +236,10 @@ async function importAngelHandler(body: any) {
     email: body.email,
     phoneNumber: body.phoneNumber,
     about: body.about || '',
+    sector: body.sectors || [],
+    university: body.university || '',
+    skills: body.skills || [],
+    languages: body.languages || [],
     about_english: body.about ? await translate(body.about) : '',
     profilePicture: body.image,
     coInvestors: coInvestorConnections,
@@ -246,11 +292,23 @@ async function importAngelHandler(body: any) {
     createdAt: new Date(body.createdAt || Date.now()),
   };
 
-  return prisma.businessAngel.upsert({
-    where: { id: body.SupabaseID },
-    update: data,
-    create: data,
-  });
+  try {
+    const existingBusinessAngel = await prisma.businessAngel.findUnique({
+      where: { id: body.SupabaseID },
+    });
+    console.log("businessAngel", existingBusinessAngel); // Check if the record is found
+    const updateResult = await prisma.businessAngel.upsert({
+      where: { id: body.SupabaseID },
+      create: data,
+      update: data,
+    });
+    console.log(updateResult);
+  } catch (error) {
+    console.log('Upsert operation failed', error);
+    logger.error('Upsert operation failed', error);
+    throw error; // re-throw the error after logging
+  }
+  }
 }
 
 async function removeAngelById(angelId: string) {

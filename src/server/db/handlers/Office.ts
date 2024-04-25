@@ -1,3 +1,5 @@
+import { Status } from '@prisma/client';
+
 import prisma from '@/server/db/prisma';
 import { logger } from '@/utils/logger';
 
@@ -10,6 +12,19 @@ async function officeForId(officeId: string) {
 }
 
 async function importOfficeHandler(body: any) {
+
+
+  if (body.status === Status.draft) {
+    const updateResult = await prisma.board.update({
+      where: { id: body.SupabaseID },
+      data: {
+        status: Status.draft,
+      },
+    });
+    logger.debug('unbpublished Office with ID', body.SupabaseID);
+    return updateResult;
+  } else
+
   logger.debug('importOfficeHandler', body);
 
   const data: any = {
@@ -37,11 +52,24 @@ async function importOfficeHandler(body: any) {
     // }),
   };
 
-  return prisma.office.upsert({
-    where: { id: body.SupabaseID },
-    update: data,
-    create: data,
-  });
+
+
+  try {
+    const existingOffice = await prisma.office.findUnique({
+      where: { id: body.SupabaseID },
+    });
+    console.log("existingOffice", existingOffice); // Check if the record is found
+    const updateResult = await prisma.office.upsert({
+      where: { id: body.SupabaseID },
+      create: data,
+      update: data,
+    });
+    console.log(updateResult);
+  } catch (error) {
+    console.log('Upsert operation failed', error);
+    logger.error('Upsert operation failed', error);
+    throw error; // re-throw the error after logging
+  }
 }
 
 async function removeOfficeById(officeId: string) {
