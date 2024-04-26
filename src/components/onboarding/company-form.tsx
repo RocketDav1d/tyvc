@@ -34,8 +34,8 @@ const CompanyForm = ({
           key={item.id}
           className={`flex flex-col py-4 space-y-4 ${index !== fields.length - 1 ? 'border-b' : ''}`}
         >
-          <Label htmlFor={`name-${index}`}>{`Company #${index + 1}`}</Label>
-          <Input {...register(`${name}[${index}].name`)} />
+          <Label htmlFor={`name-${index}`}>{`Company #${index + 1}*`}</Label>
+          <Input {...register(`${name}[${index}].name`)} required />
 
           <Label>Logo</Label>
           <Controller
@@ -95,14 +95,17 @@ const CompanyForm = ({
 
           <Button
             type="button"
-            variant={'outline'}
-            onClick={() => remove(index)}
+            variant={'destructive'}
+            onClick={() => {
+              remove(index);
+              fields.splice(index, 1);
+            }}
           >
-            Remove
+            Delete Company
           </Button>
         </div>
       ))}
-      <Button type="button" onClick={() => append({})}>
+      <Button type="button" onClick={() => append({})} variant="outline">
         {fields.length > 0 ? 'Add another company' : 'Add company'}
       </Button>
     </div>

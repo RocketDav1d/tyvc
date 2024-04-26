@@ -19,7 +19,7 @@ const InvestorPositionSelector = ({ name }: InvestorPositionSelectorProps) => {
   return (
     <div>
       <Label htmlFor="position">Position</Label>
-      <Select {...register(name, { required: true })}>
+      <Select {...register(name)}>
         <SelectTrigger>
           <SelectValue placeholder="Select an option" />
         </SelectTrigger>

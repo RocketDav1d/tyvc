@@ -19,6 +19,7 @@ const FounderForm = React.forwardRef((ref) => {
         id="firstName"
         placeholder="Name"
         {...register('firstName', { required: true })}
+        required
       />
       {formState.errors.firstName && (
         <p className="mt-1 text-sm text-red-500">First name is required.</p>
@@ -29,6 +30,7 @@ const FounderForm = React.forwardRef((ref) => {
         id="lastName"
         placeholder="Last"
         {...register('lastName', { required: true })}
+        required
       />
       {formState.errors.lastName && (
         <p className="mt-1 text-sm text-red-500">Last name is required.</p>
@@ -40,6 +42,7 @@ const FounderForm = React.forwardRef((ref) => {
         placeholder="https://linkedin.com/in/your-profile"
         {...register('linkedinProfile', { required: true })}
         type="url"
+        required
       />
       {formState.errors.linkedinProfile && (
         <p className="mt-1 text-sm text-red-500">
@@ -50,14 +53,14 @@ const FounderForm = React.forwardRef((ref) => {
       <DiversitySelectorSimple name="diversity" />
 
       <div className="flex flex-col space-y-4">
-        <Label className="block text-sm font-medium text-gray-700">
+        <Label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
           Past Companies:
         </Label>
         <CompanyForm name="pastCompanies" />
       </div>
 
       <div className="flex flex-col space-y-4">
-        <Label className="block text-sm font-medium text-gray-700">
+        <Label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
           Current Companies:
         </Label>
         <CompanyForm name="companies" showAdditionalProof showUrl />
@@ -71,9 +74,12 @@ const FounderForm = React.forwardRef((ref) => {
         />
         <Label htmlFor="acceptPrivacy" className="ml-2">
           I accept the{' '}
-          <a href="/privacy" className="text-blue-600 hover:underline">
+          <Link
+            href="https://trustyourvc.com/privacy"
+            className="text-blue-600 hover:underline"
+          >
             Privacy Policy
-          </a>
+          </Link>
           *
         </Label>
       </div>
@@ -91,7 +97,10 @@ const FounderForm = React.forwardRef((ref) => {
         />
         <Label htmlFor="acceptTerms" className="ml-2">
           I accept the{' '}
-          <Link href="/terms" className="text-blue-600 hover:underline">
+          <Link
+            href="https://trustyourvc.com/terms"
+            className="text-blue-600 hover:underline"
+          >
             Terms and Conditions
           </Link>
           *
@@ -111,12 +120,12 @@ const FounderForm = React.forwardRef((ref) => {
         />
         <Label htmlFor="acceptCommunityGuidelines" className="ml-2">
           I accept the{' '}
-          <a
-            href="/community-guidelines"
+          <Link
+            href="https://trustyourvc.com/community-guidelines"
             className="text-blue-600 hover:underline"
           >
             Community Guidelines
-          </a>
+          </Link>
           *
         </Label>
       </div>

@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 
-import WaitlistWidget from '@/components/waitlist-widget';
+
 import OnboardingLayout from '@/layouts/onboarding-layout';
 
 export const metadata: Metadata = {
@@ -17,7 +17,8 @@ export default function OnboardingReviewPage() {
         'Thank you for applying. We are currently reviewing your application.'
       }
     >
-      <WaitlistWidget />
+      <></>
+      {/* <WaitlistWidget /> */}
     </OnboardingLayout>
   );
 }
