@@ -14,7 +14,7 @@ Here are some of the dependencies in more detail
 
 ### Database
 The project uses a PostgresQL [https://supabase.com/](Supabase). Go to Settings -> CONFIGURATION -> Connection string
-To decrease database load and reduce query latency the project uses [https://www.prisma.io/data-platform/accelerate](Prisma Accelerate)
+To decrease database load and reduce query latency the project uses [https://www.prisma.io/data-platform/accelerate](PrismaAccelerate)
 
 ### Email Service
 As an Email Provider which is used for notifications and sso login the project usese [https://resend.com/home](Resend)
