@@ -281,35 +281,6 @@ async function importFundHandler(body: any) {
     ...(generationData.length > 0 && {
       generations: { connect: generationData },
     }),
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   };
 
 
@@ -351,4 +322,4 @@ async function fundIdsHandler() {
   return funds.map((fund) => fund.id);
 }
 
-export { fundByIdHandler, importFundHandler, removeFundById, fundIdsHandler };
+export { fundByIdHandler, importFundHandler, removeFundById, fundIdsHandler, fundsHandler };
